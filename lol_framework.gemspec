@@ -9,9 +9,10 @@ Gem::Specification.new do |gem|
   gem.version       = LolFramework::VERSION
   gem.authors       = ["Welington Sampaio"]
   gem.email         = ["welington.sampaio@zaez.net"]
-  gem.description   = %q{TODO: Write a gem description}
-  gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""
+  gem.description   = %q{Framework for frontend for developing RIAs. Using concepts of REST applications, primarily
+                        developed to work seamlessly with applications RAILS.  As its name says, to develop Lol is fun.}
+  gem.summary       = %q{}
+  gem.homepage      = "https://github.com/welingtonsampaio/lol-framework"
 
   gem.add_development_dependency "rspec"
   gem.add_development_dependency "autotest-standalone"
