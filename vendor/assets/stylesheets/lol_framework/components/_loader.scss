@@ -1,0 +1,15 @@
+div#loader {
+  position: fixed;
+  z-index: $zindexLoader;
+  background: rgba(white,0.85);
+  @include position(0,0,0,0);
+  div.loader {
+    position: absolute;
+    padding-top: 40px;
+    line-height: 20px;
+    text-align: center;
+    top: 50%;
+    width: 100%;
+    margin-top: -30px;
+  }
+}

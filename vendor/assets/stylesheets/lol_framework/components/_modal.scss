@@ -1,0 +1,68 @@
+// ---------------------------------------------------------
+//  Modal component
+// ---------------------------------------------------------
+
+////  Variables declarations
+// general
+$modal-border-radius : 8px;
+// overlay
+$modal-overlay-background : rgba(black, 0.6);
+$modal-overlay-width      : 100%;
+$modal-overlay-height     : 100%;
+// main
+$modal-main-backgroud : white;
+// title
+$modal-title-background-color1 : $colorWhite;
+$modal-title-background-color2 : $colorGrayLight;
+
+.lol-modal-overlay {
+  background-color: $modal-overlay-background;
+  @include size($modal-overlay-width, $modal-overlay-height);
+  @include font-sans-serif();
+  @include position(0,0,0,0);
+
+  .lol-modal-main {
+    @include position(60px);
+    @include border-radius($modal-border-radius);
+    background-color: $modal-main-backgroud;
+
+
+    .lol-modal-title {
+      display: block;
+      @include size(30px, 100%);
+      @include gradient-vertical($modal-title-background-color1, $modal-title-background-color2);
+      @include border-top-radius($modal-border-radius);
+      text-transform: uppercase;
+      text-shadow: 0 -1px -1px white;
+
+      > p {
+        line-height: 30px;
+        margin: 0 0 0 20px;
+      }
+
+      .lol-modal-close {
+        cursor: pointer;
+        position: absolute;
+        @include position(5px,10px);
+      }
+    }
+
+    .lol-modal-content {
+      padding: 10px;
+    }
+
+    .lol-modal-buttons {
+      width: 96%;
+      margin-top: 15px;
+      padding: 15px 0;
+      border-top: 1px dashed rgba(black, 0.1);
+      @include center-block();
+      > a.btn {
+        margin-left: 9px;
+        &:first-child {
+          margin-left: 0;
+        }
+      }
+    }
+  }
+}

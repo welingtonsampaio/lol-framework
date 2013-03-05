@@ -1,0 +1,46 @@
+.alerts {
+  @include afabsolute();
+  @include position(20px, 20px);
+  z-index: $zindexAlert;
+  @include user-select(none);
+
+  .alert {
+    @include clearfix();
+    padding: 8px 30px 8px 8px;
+    @include afrelative();
+    @include border-radius(8px);
+    color: rgba($colorGrayDark, 0.8);
+    border: 1px solid;
+    margin-bottom: 9px;
+    line-height: $alertLineHeight;
+    cursor: default;
+
+    // default warning
+    background: lighten($alertColorWarning, 30%);
+    color: $alertColorWarning;
+    border-color: lighten($alertColorWarning, 25%);
+
+    span {
+      @include afabsolute();
+      @include position(8px, 8px);
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    &.alert-success {
+      background: lighten($alertColorSuccess, 30%);
+      color: $alertColorSuccess;
+      border-color: lighten($alertColorSuccess, 25%);
+    }
+    &.alert-error {
+      background: lighten($alertColorError, 30%);
+      color: $alertColorError;
+      border-color: lighten($alertColorError, 25%);
+    }
+    &.alert-info {
+      background: lighten($alertColorInfo, 30%);
+      color: $alertColorInfo;
+      border-color: lighten($alertColorInfo, 25%);
+    }
+  }
+}
