@@ -91,7 +91,6 @@ class Lol.Modal extends Lol.Core
     @buttons = new Lol.Button @settings.buttonParams
   createContainers: ->
     @debug 'Creating all containers elements of class'
-    @containerOverlay  = jQuery '<div></div>'
     @containerMain     = jQuery '<div></div>'
     @containerTitle    = jQuery '<div></div>'
     @containerContent  = jQuery '<div></div>'
@@ -120,14 +119,12 @@ class Lol.Modal extends Lol.Core
     @containerClose.addClass    @settings.classes.close
     @containerContent.addClass  @settings.classes.content
     @containerMain.addClass     @settings.classes.main
-    @containerOverlay.addClass  @settings.classes.overlay
     @containerTitle.addClass    @settings.classes.title
   setContainersIds: ->
     @debug 'Setting the ID in all containers'
     @containerClose.attr    'id', @settings.containers.close
     @containerContent.attr  'id', @settings.containers.content
     @containerMain.attr     'id', @settings.containers.main
-    @containerOverlay.attr  'id', @settings.containers.overlay
     @containerTitle.attr    'id', @settings.containers.title
   setContainersStylesheets: ->
     @debug 'Setting the custom style in all containers'

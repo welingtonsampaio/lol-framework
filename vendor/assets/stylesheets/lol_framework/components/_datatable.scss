@@ -55,27 +55,14 @@ table.lol-datatable {
 
 .context-menu {
   display: block;
-  //@include size(130px, 90px);
-  background: rgba(black, 0.7);
   position: absolute;
-  @include border-radius(4px 10px 10px);
 
   ul{
     padding: 0;
     margin: 10px;
+    display: block;
     li {
-      list-style: none;
       a{
-        color: $colorWhite;
-        padding: 5px 10px;
-        margin: 2px 0;
-        display: block;
-        @include border-radius(5px);
-        &:hover {
-          background: rgba(white, 0.3);
-          text-decoration: none;
-          cursor: pointer;
-        }
         i {
           margin-right: 9px;
         }
@@ -83,7 +70,6 @@ table.lol-datatable {
 
     }
   }
-
 }
 
 
@@ -99,6 +85,9 @@ table.lol-datatable {
   position: absolute;
   right: 14px;
   top: -28px;
+  i {
+    margin-top: -8px;
+  }
 }
 
 .dataTables_filter {
@@ -135,10 +124,25 @@ table.lol-datatable {
 }
 
 .dataTables_paginate {
-  color: #949494;
   float: right;
   line-height: 30px;
-  text-shadow: 0 1px 0 #fff;
+  &, a
+  {
+    color: #949494;
+    text-shadow: 0 1px 0 #fff;
+  }
+  a {
+    cursor: pointer;
+    @include transition(color .3s linear);
+    margin-right: 8px;
+    &:last-child {
+      margin-right: 0;
+    }
+    &:hover {
+      text-decoration: none;
+      color: darken(#949494, 30%);
+    }
+  }
   .paginate_active {
     color: #333;
     padding: 0 5px;
@@ -159,14 +163,52 @@ table.lol-datatable {
     display: none;
   }
 }
-.sorting, .sorting_asc, .sorting_desc {
+.sorting,
+.sorting_asc,
+.sorting_desc {
   cursor: pointer;
+  position: relative;
+
+  .arrow{
+    width: 0;
+    height: 0;
+    display: none;
+    border: 5px solid transparent;
+    position: absolute;
+    right: 2px;
+    top: 50%;
+  }
 }
 
 .sorting_asc {
-  @include asset-background("datatable/sorting_bg.png", no-repeat, 90% 0px);
+  //@include asset-background("datatable/sorting_bg.png", no-repeat, 90% 0px);
+  .arrow{
+    margin-top: -5px;
+    display: block;
+    border-top-color: none;
+    border-left-color: none;
+    border-right-color: none;
+    border-bottom-color: rgba(0,0,0,0.35) !important;
+
+    -moz-border-bottom-colors: rgba(0,0,0,0.35) !important;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: none;
+  }
 }
 
 .sorting_desc {
-  @include asset-background("datatable/sorting_bg.png", no-repeat, 90% -36px);
+  //@include asset-background("datatable/sorting_bg.png", no-repeat, 90% -36px);
+  .arrow{
+    display: block;
+    border-top-color: rgba(0,0,0,0.35) !important;
+    border-left-color: none;
+    border-right-color: none;
+    border-bottom-color: none;
+
+    -moz-border-bottom-colors: none;
+    -moz-border-left-colors: none;
+    -moz-border-right-colors: none;
+    -moz-border-top-colors: rgba(0,0,0,0.35) !important;
+  }
 }

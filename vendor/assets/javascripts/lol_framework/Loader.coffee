@@ -59,13 +59,13 @@ Lol.Loader =
   Remove the class hidden to show loader
   ###
   show: ->
-    @generateObject unless @object
+    @generateObject() unless @object
     jQuery("##{@containerId}").removeClass @classHidden
   ###
   Add class hidden to remove Loader of browser
   ###
   remove: ->
-    @generateObject unless @object
+    @generateObject() unless @object
     jQuery("##{@containerId}").addClass @classHidden
   ###
   Generate Loader object
@@ -75,9 +75,10 @@ Lol.Loader =
     @object = jQuery '<div></div>'
     loader  = jQuery '<div></div>'
     @object.attr     'id', @containerId
-    @object.addClass @containerClass
-    loader.attr     'id', @loaderId
-    loader.addClass @loaderClass
-    loader.appendTo @object
-    @object.appendTo jQuery('body')
+    @object.addClass  @containerClass
+    loader.attr      'id', @loaderId
+    loader.addClass   @loaderClass
+    loader.appendTo   @object
+    @object.appendTo  jQuery('body')
+    true
 

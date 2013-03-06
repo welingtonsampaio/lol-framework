@@ -7,7 +7,7 @@ Framework for frontend for developing RIAs. Using concepts of REST applications,
 
 Add this line to your application's Gemfile:
 
-    gem 'lol-framework'
+    gem 'lol_framework'
 
 And then execute:
 
@@ -15,7 +15,7 @@ And then execute:
 
 Or install it yourself as:
 
-    $ gem install lol-framework
+    $ gem install lol_framework
 
 ## Usage
 

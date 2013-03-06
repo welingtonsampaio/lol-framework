@@ -28,6 +28,7 @@ Create a new instance of Alert.
 @example
   *-* Create manual alert *-*
   var lol_alert = new Lol.Alert({
+    debug      : false,
     autoRemove : true,
     type       : 'success',
     message    : 'Success to create a new object LolAlert',
@@ -55,24 +56,21 @@ class Lol.Alert extends Lol.Core
     @generateId()
     return false unless @setContainer()
     @createAlert()
-    @setEvents()
     @setInterval()
-  appendClose: ->
-    @debug 'Create and append close button to alert'
-    @close = jQuery "<span></span>"
-    @close.append "x"
-    @close.appendTo @alert
+  createClose: ->
+    close = jQuery '<button type="button" class="close" data-dismiss="alert">&times;</button>'
+    @alert.append close
   createAlert: ->
     @debug 'Create an object Alert'
     @alert = jQuery '<div></div>'
     @alert.addClass "alert #{@settings.objects.classes[@settings.type]}"
     @alert.append @settings.message
-    @appendClose()
+    @createClose()
     @alert.appendTo @container
   destroy: ->
     @debug 'Initializing the destroy method'
-    @alert.slideUp ->
-      jQuery(@).remove()
+    @alert.fadeOut ->
+      jQuery(@).alert 'close'
     clearInterval(@interval) if @settings.autoRemove
     super
   setContainer: ->
@@ -87,18 +85,10 @@ class Lol.Alert extends Lol.Core
     @interval = setInterval(->
       _this.destroy()
     , @settings.delayRemove) if @settings.autoRemove
-  setEvents: ->
-    @debug 'Setting all events'
-    _this = @
-    @close.bind "click#{@namespace}", ->
-      _this.debug 'Dispatch event clickon close button'
-      _this.destroy()
 
 Lol.alert =
-#  private:
-#    dataset:
-
   defaults:
+    debug      : false
     autoRemove : true
     type       : 'success' # Options success | error | warning | info
     message    : null

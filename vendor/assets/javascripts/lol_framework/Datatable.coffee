@@ -70,12 +70,12 @@ Create a new instance of Datatable.
         // See default configuration
       },
       edit: function(row, object) {
-        object.debug row.data(object.dataset.editLink)
-        window.location = row.data(object.dataset.editLink)
-        return false },
+        object.debug(row.data(object.dataset.editLink));
+        window.location = row.data(object.dataset.editLink);
+        return false; },
       view: function(row, object) {
-        window.location = row.data(object.dataset.showLink)
-        return false },
+        window.location = row.data(object.dataset.showLink);
+        return false; },
       iconView : 'icon-eye-open icon-white',
       useIcons : true,
     },
@@ -141,26 +141,26 @@ class Lol.Datatable extends Lol.Core
   createMenuContext: (row, event)->
     if row.data(@dataset.deleteLink) or row.data(@dataset.editLink) or row.data(@dataset.viewLink)
       _this = @
-      context = jQuery "<div id='context-menu-#{@id}' class='context-menu'></div>"
+      context = jQuery "<div class='dropdown context-menu' id='context-menu-#{@id}'></div>"
       context.css
-        left : event.pageX - 10
-        top  : event.pageY - 10
+        left : event.pageX - 15
+        top  : event.pageY - 15
       context.bind
         mouseleave: (event)->
-          jQuery(@).stop().animate {opacity: 0}, 'slow', ->
+          jQuery(@).stop().delay(800).animate {opacity: 0}, ->
             jQuery(@).remove()
         mouseenter: (event)->
-          jQuery(@).stop().animate {opacity: 1}
-      ul = jQuery "<ul></ul>"
+          jQuery(@).stop(true).animate {opacity: 1}
+      ul = jQuery '<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu">'
       if ( row.data(@dataset.viewLink) )
-        view = jQuery "<li><a href='#{row.data(@dataset.viewLink)}'>#{Lol.t('datatable_view')}</a></li>"
+        view = jQuery "<li><a tabindex='-1' href='#{row.data(@dataset.viewLink)}'>#{Lol.t('datatable_view')}</a></li>"
         jQuery("<i class='#{@settings.contextMenu.iconView}'></i>").prependTo view.find('a') if @settings.contextMenu.useIcons
         view.bind
           click: ->
             _this.settings.contextMenu.view row, _this
         view.appendTo ul
       if ( row.data(@dataset.editLink) )
-        edit = jQuery "<li><a href='#{row.data(@dataset.editLink)}'>#{Lol.t('datatable_edit')}</a></li>"
+        edit = jQuery "<li><a tabindex='-1' href='#{row.data(@dataset.editLink)}'>#{Lol.t('datatable_edit')}</a></li>"
         jQuery("<i class='#{@settings.contextMenu.iconEdit}'></i>").prependTo edit.find('a') if @settings.contextMenu.useIcons
         edit.bind
           click: ->
@@ -168,7 +168,7 @@ class Lol.Datatable extends Lol.Core
             _this.settings.contextMenu.edit row, _this
         edit.appendTo ul
       if ( row.data(@dataset.deleteLink) )
-        remove = jQuery "<li><a href='#{row.data(@dataset.deleteLink)}'>#{Lol.t('datatable_delete')}</a></li>"
+        remove = jQuery "<li><a tabindex='-1' href='#{row.data(@dataset.deleteLink)}'>#{Lol.t('datatable_delete')}</a></li>"
         jQuery("<i class='#{@settings.contextMenu.iconDelete}'></i>").prependTo remove.find('a') if @settings.contextMenu.useIcons
         remove.bind
           click: ->
@@ -179,6 +179,7 @@ class Lol.Datatable extends Lol.Core
   generate: ->
     @table.dataTable @settings.configuration
     jQuery('.dataTables_filter input').attr('placeholder', Lol.t('datatable_search'))
+    $("<em class='arrow'></em>").appendTo @table.find('th')
   getDt: ->
     @table.dataTable()
   goLink: (row)->
@@ -200,8 +201,9 @@ class Lol.Datatable extends Lol.Core
     @table.addClass 'lol-datatable'
   setEvents: ->
     _this = @
-    rows = jQuery("tbody tr", @table)
-    rows.live "click#{@namespace}", (e)->
+    rows = "tbody tr"
+    @table.delegate rows, "click#{@namespace}", (e)->
+#    rows.live "click#{@namespace}", (e)->
       row = jQuery @
       if _this.isRowActive(row)
         if row.data(_this.dataset.timeClicked) > new Date().getTime()
@@ -210,7 +212,8 @@ class Lol.Datatable extends Lol.Core
           _this.unsetActiveRow(row)
       else
         _this.setActiveRow(row)
-    rows.live "contextmenu#{@namespace}", (event)->
+    @table.delegate rows, "contextmenu#{@namespace}", (e)->
+#      rows.live "contextmenu#{@namespace}", (event)->
       row = jQuery @
       _this.setActiveRow(row)
       _this.createMenuContext(row, event)
@@ -292,7 +295,9 @@ Lol.datatable =
       view: (row, object)->
         window.location = row.data(object.dataset.viewLink)
         false
-      iconView : 'icon-eye-open icon-white'
+      iconView : 'icon-eye-open'
+      iconEdit : ' icon-edit'
+      iconDelete : 'icon-remove'
       useIcons : true
       model    : null # typeof Lol.Model
     configuration:
