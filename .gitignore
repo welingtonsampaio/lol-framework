@@ -17,3 +17,4 @@ test/version_tmp
 tmp
 vendor/assets/stylesheets/lol.scss
 vendor/assets/javascripts/lol.coffee
+.idea

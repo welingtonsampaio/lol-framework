@@ -1,5 +1,5 @@
 .alerts {
-  @include afabsolute();
+  @include affix();
   @include position(20px, 20px);
   z-index: $zindexAlert;
   @include user-select(none);
