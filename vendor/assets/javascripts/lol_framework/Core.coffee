@@ -67,6 +67,7 @@ class Lol.Core
   ###
   Destroy the object and cleaning of Utils
   @see Lol.Utils.removeObject()
+  @return Boolean
   ###
   destroy: ->
     Lol.Utils.removeObject @id

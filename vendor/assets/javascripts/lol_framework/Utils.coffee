@@ -37,6 +37,7 @@ Lol.Utils =
   	@_object_id[id]
   removeObject: (id)->
     @_object_id[id] = null
+    @_object_id[id] == null
   redirector: (url)->
     window.location = url
 

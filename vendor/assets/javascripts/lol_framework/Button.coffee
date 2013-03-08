@@ -230,7 +230,7 @@ Lol.button =
       Contains CSS classes to add to the CANCEL button
       @type {String}
       ###
-      CANCEL: 'btn'
+      CANCEL: 'btn btn-danger'
       ###
       Contains CSS classes to add to the YES button
       @type {String}
