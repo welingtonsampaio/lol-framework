@@ -21,7 +21,6 @@ end
 
 LolFramework::Config.COMPONENTS_CSS.iterate! do |css|
   css.components_loader=    true
-  css.components_modal=     true
   css.components_datatable= true
   css.components_alert=     true
 end

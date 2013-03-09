@@ -25,6 +25,40 @@ Create a new instance of Button.
 @param  {Object}     Receives configuration to create the Button, @see Lol.button.defaults
 @return {Button}       Returns a new Button.
 @type   {Object}
+@example
+  *-* Create manual alert *-*
+  var lol_button = new Lol.Button({
+    attribute     : {},
+    buttons       : null,
+    class         : '',
+    container     : 'body',
+    debug         : false,
+    return_handler: false,
+    text          : null,
+    use_button_el : true,
+    attributes: {
+      CANCEL : {},
+      NO     : {},
+      OK     : {},
+      YES    : {}
+    },
+    callback: {
+      click: function(event, object){}
+    },
+    classes: {
+      all   : 'btn',
+      OK    : '',
+      CANCEL: 'btn-danger',
+      YES   : '',
+      NO    : ''
+    },
+    fn: {
+      OK_CLICK    : function(event, object){},
+      CANCEL_CLICK: function(event, object){},
+      YES_CLICK   : function(event, object){},
+      NO_CLICK    : function(event, object){}
+    }
+  });
 ###
 class Lol.Button extends Lol.Core
   # Variables declaration
@@ -46,8 +80,8 @@ class Lol.Button extends Lol.Core
   Adds attributes to the button
   ###
   addAttributes: ->
-    @debug "Add attributes to button: ", @settings.atribute
-    for key,value of @settings.atribute
+    @debug "Add attributes to button: ", @settings.attribute
+    for key,value of @settings.attribute
       @button.attr key, value
   ###
   Adds attributes to the button
@@ -75,6 +109,7 @@ class Lol.Button extends Lol.Core
           container: @settings.container
           class: @settings.classes.YES
           debug: @settings.debug
+          use_button_el: @settings.use_button_el
           callback:
             click: @settings.fn.YES_CLICK
       if text.indexOf('NO') isnt -1
@@ -84,6 +119,7 @@ class Lol.Button extends Lol.Core
           container: @settings.container
           class: @settings.classes.NO
           debug: @settings.debug
+          use_button_el: @settings.use_button_el
           callback:
             click: @settings.fn.NO_CLICK
       if text.indexOf('OK') isnt -1
@@ -93,6 +129,7 @@ class Lol.Button extends Lol.Core
           container: @settings.container
           class: @settings.classes.OK
           debug: @settings.debug
+          use_button_el: @settings.use_button_el
           callback:
             click: @settings.fn.OK_CLICK
       if text.indexOf('CANCEL') isnt -1
@@ -102,6 +139,7 @@ class Lol.Button extends Lol.Core
           container: @settings.container
           class: @settings.classes.CANCEL
           debug: @settings.debug
+          use_button_el: @settings.use_button_el
           callback:
             click: @settings.fn.CANCEL_CLICK
   ###
@@ -110,9 +148,12 @@ class Lol.Button extends Lol.Core
   createButton: (text)->
     @debug 'Creating button: ', @settings.text
     @debug "Add class '#{@settings.class}' to current button"
-    @button = $ '<a></a>'
+    if @settings.use_button_el
+      @button = $ "<button></button>"
+    else
+      @button = $ '<a></a>'
     @button.html Lol.t(@settings.text)
-    @button.addClass @settings.class
+    @button.addClass "#{@settings.classes.all} #{@settings.class}"
   ###
   Creates the button specified in the settings
   ###
@@ -181,6 +222,11 @@ Lol.button =
     ###
     text          : null
     ###
+    Sets whether to create an element of type "button" or "a"
+    @type {Boolean}
+    ###
+    use_button_el : true
+    ###
     Object that contains the attributes
     of the buttons on the block
     @type {Object}
@@ -215,32 +261,37 @@ Lol.button =
       Click event to the button
       @type {Function}
       ###
-      click: ->
+      click: (event, object)->
     ###
     Contains classes to add buttons on the block
     @type {Object}
     ###
     classes:
       ###
+      Contains CSS classes to add to All buttons
+      @type {String}
+      ###
+      all   : 'btn'
+      ###
       Contains CSS classes to add to the OK button
       @type {String}
       ###
-      OK    : 'btn'
+      OK    : ''
       ###
       Contains CSS classes to add to the CANCEL button
       @type {String}
       ###
-      CANCEL: 'btn btn-danger'
+      CANCEL: 'btn-danger'
       ###
       Contains CSS classes to add to the YES button
       @type {String}
       ###
-      YES   : 'btn'
+      YES   : ''
       ###
       Contains CSS classes to add to the NO button
       @type {String}
       ###
-      NO    : 'btn'
+      NO    : ''
     ###
     Contains events to add buttons on the block
     @type {String}
@@ -250,19 +301,19 @@ Lol.button =
       Click event to the OK button
       @type {Function}
       ###
-      OK_CLICK: ->
+      OK_CLICK: (event, object)->
       ###
       Click event to the CANCEL button
       @type {Function}
       ###
-      CANCEL_CLICK: ->
+      CANCEL_CLICK: (event, object)->
       ###
       Click event to the YES button
       @type {Function}
       ###
-      YES_CLICK: ->
+      YES_CLICK: (event, object)->
       ###
       Click event to the NO button
       @type {Function}
       ###
-      NO_CLICK: ->
+      NO_CLICK: (event, object)->

@@ -4,7 +4,6 @@ module LolFramework
       class Css < LolFramework::Common
         defaulted_attributes({
           components_loader:    false,
-          components_modal:     false,
           components_datatable: false,
           components_alert:     false
         })
@@ -31,8 +30,8 @@ module LolFramework
           lol.write %[@import "./lol_framework/variable";\n]
           lol.write %[@import "./lol_framework/mixin";\n\n]
           lol.write %[html.lol {\n]
+          lol.write %[@import "./lol_framework/commom";\n]
           lol.write %[@import "./lol_framework/components/loader";\n]     if components_loader
-          lol.write %[@import "./lol_framework/components/modal";\n]      if components_modal
           lol.write %[@import "./lol_framework/components/datatable";\n]  if components_datatable
           lol.write %[@import "./lol_framework/components/alert";\n]      if components_alert
           lol.write %[}]
