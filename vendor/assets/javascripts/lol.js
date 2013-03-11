@@ -1,3 +1,7 @@
+//= require ./lol_framework/Library/underscore
+//= require ./lol_framework/Library/backbone
+//= require ./lol_framework/Library/date-functions
+//= require ./lol_framework/Library/date-functions
 //= require ./lol_framework/Library/date-functions
 //= require ./lol_framework/Library/jquery.dataTables.min
 //= require ./lol_framework/Library/jquery.mobile
@@ -14,5 +18,5 @@
 //= require ./lol_framework/Ajax
 //= require ./lol_framework/Modal
 //= require ./lol_framework/Model
-//= require ./lol_framework/Model/Rest
+//= require ./lol_framework/Model/Destroy
 //= require ./lol_framework/Datatable

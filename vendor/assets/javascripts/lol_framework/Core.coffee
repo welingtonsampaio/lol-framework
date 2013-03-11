@@ -45,7 +45,7 @@ class Lol.Core
   settings:
     debug: false
   ###
-  Checks if there is bibliotaco jQuery,
+  Checks if there is library of jQuery,
   returns false if there
   @exception If there jQuery
   @return Boolean

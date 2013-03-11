@@ -3,6 +3,8 @@ module LolFramework
     module Components
       class Js < LolFramework::Common
         defaulted_attributes({
+          library_underscore:            false,
+          library_backbone:              false,
           library_date_functions:        false,
           library_jquery_dataTables_min: false,
           library_jquery_mobile:         false,
@@ -19,7 +21,7 @@ module LolFramework
           ajax:                          false,
           modal:                         false,
           model:                         false,
-          model_Rest:                    false,
+          model_destroy:                 false,
           datatable:                     false})
 
         def generate
@@ -29,13 +31,14 @@ module LolFramework
 
           # defines the all dependencies of components
           dependencies = {
-            ajax:      %w{core},
-            alert:     %w{core},
-            button:    %w{core},
-            datatable: %w{core library_jquery_dataTables_min},
-            core:      %w{lol utils  i18n  lang_en_us debug},
-            modal:     %w{core button},
-            model:     %w{core}
+            ajax:          %w{core},
+            alert:         %w{core},
+            button:        %w{core},
+            datatable:     %w{core library_jquery_dataTables_min},
+            core:          %w{lol utils  i18n  lang_en_us debug library_underscore library_backbone},
+            modal:         %w{core button},
+            model:         %w{core},
+            model_destroy: %w{model alert}
           }
           begin
             test_one = instance_variables
@@ -47,6 +50,10 @@ module LolFramework
             test_two = instance_variables
           end while test_one != test_two
           lol = File.new("#{LolFramework::Config::LOL_ASSETS_PATH}/javascripts/lol.js", "w")
+          lol.write "//= require ./lol_framework/Library/underscore\n"            if library_underscore
+          lol.write "//= require ./lol_framework/Library/backbone\n"              if library_backbone
+          lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
+          lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
           lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
           lol.write "//= require ./lol_framework/Library/jquery.dataTables.min\n" if library_jquery_dataTables_min
           lol.write "//= require ./lol_framework/Library/jquery.mobile\n"         if library_jquery_mobile
@@ -63,7 +70,7 @@ module LolFramework
           lol.write "//= require ./lol_framework/Ajax\n"                          if ajax
           lol.write "//= require ./lol_framework/Modal\n"                         if modal
           lol.write "//= require ./lol_framework/Model\n"                         if model
-          lol.write "//= require ./lol_framework/Model/Rest\n"                    if model_Rest
+          lol.write "//= require ./lol_framework/Model/Destroy\n"                 if model_destroy
           lol.write "//= require ./lol_framework/Datatable\n"                     if datatable
           lol.close
         end

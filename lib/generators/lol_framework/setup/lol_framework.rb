@@ -1,4 +1,6 @@
 LolFramework::Config.COMPONENTS_JS.iterate! do |js|
+  js.library_underscore=            true
+  js.library_backbone=              true
   js.library_date_functions=        true
   js.library_jquery_dataTables_min= true
   js.library_jquery_mobile=         true
@@ -15,7 +17,7 @@ LolFramework::Config.COMPONENTS_JS.iterate! do |js|
   js.ajax=                          true
   js.modal=                         true
   js.model=                         true
-  js.model_Rest=                    true
+  js.model_destroy=                 true
   js.datatable=                     true
 end
 

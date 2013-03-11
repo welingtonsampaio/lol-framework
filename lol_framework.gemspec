@@ -19,6 +19,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "test_notifier"
   gem.add_dependency "railties",       ">= 3.0", "< 5.0"
   gem.add_dependency "sprockets",      "> 2.1"
+  gem.add_dependency "rails-backbone", "~> 0.9.10"
   gem.add_dependency "bootstrap-sass", '>= 2.3.0.1'
 
   gem.files         = `git ls-files`.split($/)

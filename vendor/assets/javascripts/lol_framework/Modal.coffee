@@ -86,33 +86,35 @@ class Lol.Modal extends Lol.Core
     @setContentConfig()
     @generate()
   createButtons: ->
-    @settings.buttonParams.container = @containerButtons
-    @settings.buttonParams.buttons   = @settings.buttons
+    @settings.buttonParams.container     = @containerButtons
+    @settings.buttonParams.buttons       = @settings.buttons
+    @settings.buttonParams.use_button_el = false
     @buttons = new Lol.Button @settings.buttonParams
   createContainers: ->
     @debug 'Creating all containers elements of class'
     @containerMain     = jQuery '<div></div>'
     @containerTitle    = jQuery '<div></div>'
     @containerContent  = jQuery '<div></div>'
-    @containerClose    = jQuery '<div></div>'
+    @containerClose    = jQuery '<button></button>'
     @containerButtons  = jQuery '<div></div>' if @settings.buttons
-  destroy: ->
-    @debug 'Destroy all objects of modal'
-    @containerOverlay.remove()
-    @containerMain.remove()
-    @containerTitle.remove()
-    @containerContent.remove()
-    @containerClose.remove()
-    super
+  destroy: (hide=true)->
+    if hide
+      @containerMain.modal 'hide'
+    else
+      @debug 'Destroy all objects of modal'
+      @containerTitle.remove()
+      @containerContent.remove()
+      @containerClose.remove()
+      @containerMain.remove()
+      super
   generate: ->
     @setEvents()
     @debug 'Generate modal and add to body'
-    @containerOverlay.appendTo jQuery('body')
-    @containerOverlay.append   @containerMain
     @containerMain.append      @containerTitle
     @containerMain.append      @containerContent
     @containerMain.append      @containerButtons if @settings.buttons
-    @containerTitle.append     @containerClose
+    @containerTitle.prepend    @containerClose   if @settings.close
+    @containerMain.modal()
   setContainersClasses: ->
     @debug 'Setting the style class in all containers'
     @containerButtons.addClass  @settings.classes.buttons if @settings.buttons
@@ -122,6 +124,7 @@ class Lol.Modal extends Lol.Core
     @containerTitle.addClass    @settings.classes.title
   setContainersIds: ->
     @debug 'Setting the ID in all containers'
+    @containerButtons.attr  'id', @settings.containers.buttons
     @containerClose.attr    'id', @settings.containers.close
     @containerContent.attr  'id', @settings.containers.content
     @containerMain.attr     'id', @settings.containers.main
@@ -148,32 +151,33 @@ class Lol.Modal extends Lol.Core
     @debug 'Reset events of all buttons'
     for button in @buttons
       button.setEvents()
-      button.button.bind "click#{@namespace}",{button:button}, (event)->
+      button.button.on "click#{@namespace}",{button:button}, (event)->
         _this.settings.callbacks.buttonClick event.data.button, _this
         false
   setEventClose: ->
     _this = @
-    @containerClose.bind "click#{@namespace}", ->
+    @containerMain.on "hidden#{@namespace}", ->
       _this.debug 'Dispath event close click'
-      _this.destroy()
+      _this.destroy false
   setEvents: ->
     @unsetEvents()
     @setEventButtons() if @settings.buttons
     @setEventClose()
   setStyle: (element, style, value)-> element.css style, value
   setCloseConfig: ->
-    @containerClose.append '<i class="icon-remove">'
+    @containerClose.attr 'data-dismiss', 'modal'
+    @containerClose.attr 'aria-hidden',  'true'
+    @containerClose.append '&times;'
   setTitleConfig: ->
-    @containerTitle.append "<p class='pull-left'>#{@settings.title}</p>"
+    @containerTitle.append "<h3 id='myModalLabel'>#{@settings.title}</h3>"
   setContentConfig: ->
-    @containerContent.append(@settings.content)
+    @containerContent.append @settings.content
   unsetEvents: ->
     @debug "Remove all events, with namespace: '#{@namespace}'"
-    @containerClose.unbind    @namespace
-    @containerOverlay.unbind  @namespace
-    @containerMain.unbind     @namespace
-    @containerTitle.unbind    @namespace
-    @containerContent.unbind  @namespace
+    @containerClose.off   @namespace
+    @containerMain.off    @namespace
+    @containerTitle.off   @namespace
+    @containerContent.off @namespace
 
 Lol.modal =
   defaults:
@@ -197,7 +201,6 @@ Lol.modal =
       close    : 'lol_modal_close'
       content  : 'lol_modal_content'
       main     : 'lol_modal_main'
-      overlay  : 'lol_modal_overlay'
       title    : 'lol_modal_title'
     # stylesheets
     stylesheets:
@@ -205,14 +208,12 @@ Lol.modal =
       close    : {}
       content  : {}
       main     : {}
-      overlay  : {}
       title    : {}
     # classes
     classes:
-      buttons  : 'lol-modal-buttons clearfix t-right'
-      close    : 'lol-modal-close pull-right'
-      content  : 'lol-modal-content clearfix'
-      main     : 'lol-modal-main container afrelative'
-      overlay  : 'lol-modal-overlay affix'
-      title    : 'lol-modal-title clearfix'
+      buttons  : 'modal-footer'
+      close    : 'close'
+      content  : 'modal-body'
+      main     : 'modal hide fade'
+      title    : 'modal-header'
 

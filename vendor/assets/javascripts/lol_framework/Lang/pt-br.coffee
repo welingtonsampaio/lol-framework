@@ -52,6 +52,9 @@ Lol.i18n['pt-br'] =
   date_days_thursday  : 'Quinta'
   date_days_friday    : 'Sexta'
   date_days_saturday  : 'Sábado'
+  # Models
+  model_destroy_error   : 'Não foi possivel excluir este registro. Erro: "_STATUS_TEXT_".'
+  model_destroy_success : 'Registro excluído com sucesso.'
 
 ## Alias
 Lol.i18n['pt'] = Lol.i18n['pt-br']

@@ -52,3 +52,6 @@ Lol.i18n['en-us'] =
   date_days_thursday  : 'Thursday'
   date_days_friday    : 'Friday'
   date_days_saturday  : 'Saturday'
+  # Models
+  model_destroy_error   : 'Could not delete this record. Error: "_STATUS_TEXT_".'
+  model_destroy_success : 'Record successfully deleted.'

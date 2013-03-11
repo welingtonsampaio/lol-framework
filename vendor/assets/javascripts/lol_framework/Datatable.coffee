@@ -147,7 +147,7 @@ class Lol.Datatable extends Lol.Core
         top  : event.pageY - 15
       context.bind
         mouseleave: (event)->
-          jQuery(@).stop().delay(800).animate {opacity: 0}, ->
+          jQuery(@).stop().delay(_this.settings.delayDblclick).animate {opacity: 0}, ->
             jQuery(@).remove()
         mouseenter: (event)->
           jQuery(@).stop(true).animate {opacity: 1}
@@ -203,7 +203,6 @@ class Lol.Datatable extends Lol.Core
     _this = @
     rows = "tbody tr"
     @table.delegate rows, "click#{@namespace}", (e)->
-#    rows.live "click#{@namespace}", (e)->
       row = jQuery @
       if _this.isRowActive(row)
         if row.data(_this.dataset.timeClicked) > new Date().getTime()
@@ -213,7 +212,6 @@ class Lol.Datatable extends Lol.Core
       else
         _this.setActiveRow(row)
     @table.delegate rows, "contextmenu#{@namespace}", (e)->
-#      rows.live "contextmenu#{@namespace}", (event)->
       row = jQuery @
       _this.setActiveRow(row)
       _this.createMenuContext(row, event)
@@ -256,24 +254,28 @@ Lol.datatable =
   ## private configs
   private:
     dataset:
-      ajaxResource: 'datatableAjax'
-      ajaxRoot    : 'datatableAjaxRoot'
-      ajaxMethod  : "datatableAjaxMethod"
       autoGenerate: 'lolDatatable'
       link        : 'datatableLink'
       deleteLink  : 'datatableDeleteLink'
       editLink    : 'datatableEditLink'
       viewLink    : 'datatableViewLink'
       timeClicked : 'datatableClicked'
+      modelName   : 'datatableModelName'
+      modelId     : 'datatableModelId'
   defaults:
     debug         : true
     selectable    : true
     target        : null
-    delayDblclick : 3000
+    delayDblclick : 0
     classes:
       activeRow : 'active_row'
     contextMenu:
       delete: (row, object)->
+        window.lol_temp_fn_model_destroy = [row,object]
+        attrs =
+          "data-datatable-model-name": row.data(Lol.datatable.private.dataset.modelName)
+          "data-datatable-model-id"  : row.data(Lol.datatable.private.dataset.modelId)
+        console.log attrs
         new Lol.Modal
           buttons  : 'OK_CANCEL'
           content  : Lol.t('datatable_confirm_delete')
@@ -282,11 +284,13 @@ Lol.datatable =
             buttonClick: (button, obj)->
               obj.destroy()
           buttonParams:
+            attributes:
+              OK: attrs
             fn:
               OK_CLICK: (event, obj)->
-                rest = Lol.model
-                  object: row
-                console.log rest
+                model = new Lol.model.reference[obj.button.data(Lol.datatable.private.dataset.modelName)]
+                model.set 'id', obj.button.data(Lol.datatable.private.dataset.modelId)
+                model.destroy Lol.model.destroy
         false
       edit: (row, object)->
         object.debug row.data(object.dataset.editLink)
@@ -308,11 +312,11 @@ Lol.datatable =
       bAutoWidth     : true
       bDeferRender   : false
       bDestroy       : false
-      bFilter        : true
-      bInfo          : true
+      bFilter        : false
+      bInfo          : false
       bJQueryUI      : false
       bLengthChange  : false
-      bPaginate      : true
+      bPaginate      : false
       bProcessing    : false
       bRetrieve      : false
       bScrollAutoCss : true
