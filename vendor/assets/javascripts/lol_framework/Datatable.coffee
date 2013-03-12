@@ -58,65 +58,68 @@ Create a new instance of Datatable.
   </table>
   *-* Setting manually configuration *-*
   var datatable = new Lol.Datatable({
-    debug         : true,
-    selectable    : true,
-    target        : '#lol-datatable',
-    delayDblclick : 3000,
+    debug:         false,
+    selectable:    true,
+    target:        null,
+    delayDblclick: 0,
     classes: {
-      activeRow : 'active_row'
+      activeRow: 'active_row'
     },
     contextMenu: {
-      delete: function(row, object) {
-        // See default configuration
+      "delete": function(row, object) {
+        //see documentation
       },
-      edit: function(row, object) {
-        object.debug(row.data(object.dataset.editLink));
-        window.location = row.data(object.dataset.editLink);
-        return false; },
-      view: function(row, object) {
-        window.location = row.data(object.dataset.showLink);
-        return false; },
-      iconView : 'icon-eye-open icon-white',
-      useIcons : true,
+      edit:     function(row, object) {
+        //see documentation
+      },
+      view:     function(row, object) {
+        //see documentation
+      },
+      iconView:   'icon-eye-open',
+      iconEdit:   ' icon-edit',
+      iconDelete: 'icon-remove',
+      useIcons:   true,
+      model: null
     },
     configuration: {
-      aaSortingFixed : null,
-      aoColumnDefs   : null,
-      aoColumns      : null,
+      aaSortingFixed: null,
+      aoColumnDefs: null,
+      aoColumns: null,
       asStripeClasses: null,
-      bAutoWidth     : true,
-      bDeferRender   : false,
-      bDestroy       : false,
-      bFilter        : true,
-      bInfo          : true,
-      bJQueryUI      : false,
-      bLengthChange  : false,
-      bPaginate      : true,
-      bProcessing    : false,
-      bRetrieve      : false,
-      bScrollAutoCss : true,
+      bAutoWidth: true,
+      bDeferRender: false,
+      bDestroy: false,
+      bFilter: false,
+      bInfo: false,
+      bJQueryUI: false,
+      bLengthChange: false,
+      bPaginate: false,
+      bProcessing: false,
+      bRetrieve: false,
+      bScrollAutoCss: true,
       bScrollCollapse: false,
       bScrollInfinite: false,
-      bServerSide    : false,
-      bSort          : true,
-      bSortCellsTop  : false,
-      bSortClasses   : true,
-      bStateSave     : false,
+      bServerSide: false,
+      bSort: true,
+      bSortCellsTop: false,
+      bSortClasses: true,
+      bStateSave: false,
       iCookieDuration: 7200,
-      iDeferLoading  : null,
-      iDisplayLength : 20,
-      iDisplayStart  : 0,
-      iScrollLoadGap : 100,
-      iTabIndex      : 0,
-      sAjaxDataProp  : "aaData",
-      sAjaxSource    : null,
-      sCookiePrefix  : "SpryMedia_DataTables_",
-      sDom           : "lfrtip",
+      iDeferLoading: null,
+      iDisplayLength: 20,
+      iDisplayStart: 0,
+      iScrollLoadGap: 100,
+      iTabIndex: 0,
+      sAjaxDataProp: "aaData",
+      sAjaxSource: null,
+      sCookiePrefix: "SpryMedia_DataTables_",
+      sDom: "lfrtip",
       sPaginationType: "two_button",
-      sScrollX       : "",
-      sScrollXInner  : "",
-      sScrollY       : "",
-      sServerMethod  : "GET" }
+      sScrollX: "",
+      sScrollXInner: "",
+      sScrollY: "",
+      sServerMethod: "GET"
+		}
   });
 ###
 class Lol.Datatable extends Lol.Core
@@ -133,6 +136,7 @@ class Lol.Datatable extends Lol.Core
     @dataset = Lol.datatable.private.dataset
     @setTable()
     @setConfigTable()
+    @setModel()
     @setTranslation()
     @setAjax()
     @generate()
@@ -216,6 +220,8 @@ class Lol.Datatable extends Lol.Core
       _this.setActiveRow(row)
       _this.createMenuContext(row, event)
       false
+  setModel: ->
+    @settings.contextMenu.model = @table.data(Lol.datatable["private"].dataset.modelName)
   setTable: ->
     @table = @settings.target
   setTranslation: ->
@@ -273,9 +279,8 @@ Lol.datatable =
       delete: (row, object)->
         window.lol_temp_fn_model_destroy = [row,object]
         attrs =
-          "data-datatable-model-name": row.data(Lol.datatable.private.dataset.modelName)
+          "data-datatable-model-name": object.settings.contextMenu.model
           "data-datatable-model-id"  : row.data(Lol.datatable.private.dataset.modelId)
-        console.log attrs
         new Lol.Modal
           buttons  : 'OK_CANCEL'
           content  : Lol.t('datatable_confirm_delete')
