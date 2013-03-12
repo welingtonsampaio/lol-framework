@@ -27,7 +27,7 @@ Create a new instance of Datatable.
 @type   {Object}
 @example
   *-* Auto configuration *-*
-  <table id="lol-datatable" data-lol-datatable="true">
+  <table id="lol-datatable" data-lol-datatable="true" data-datatable-model-name="User">
     <thead>
       <tr>
         <th>ID</th>
@@ -40,7 +40,8 @@ Create a new instance of Datatable.
         data-datatable-link="http://welington.zaez.net/"
         data-datatable-edit-link="#edit_my_page_ws"
         data-datatable-view-link="#view_my_page_ws"
-        data-datatable-delete-link="#delete_my_page_ws">
+        data-datatable-delete-link="#delete_my_page_ws"
+        data-datatable-model-id="1">
         <td>1</td>
         <td>Welington</td>
         <td>Sampaio</td>
@@ -49,7 +50,8 @@ Create a new instance of Datatable.
         data-datatable-link="http://fabricio.zaez.net/"
         data-datatable-edit-link="#edit_my_page_fm"
         data-datatable-view-link="#view_my_page_fm"
-        data-datatable-delete-link="#delete_my_page_fm">
+        data-datatable-delete-link="#delete_my_page_fm"
+        data-datatable-model-id="2">
         <td>2</td>
         <td>Fabricio</td>
         <td>Monte</td>
@@ -76,7 +78,7 @@ Create a new instance of Datatable.
         //see documentation
       },
       iconView:   'icon-eye-open',
-      iconEdit:   ' icon-edit',
+      iconEdit:   'icon-edit',
       iconDelete: 'icon-remove',
       useIcons:   true,
       model: null
@@ -269,13 +271,58 @@ Lol.datatable =
       modelName   : 'datatableModelName'
       modelId     : 'datatableModelId'
   defaults:
-    debug         : true
+    ###
+    Sets whether to print debug messages, such as sequences
+    of plays and creations, to facilitate the extension of
+    the code and bug fixes.
+    @type {Boolean}
+    ###
+    debug         : false
+    ###
+    Sets up the "Datatable" must set the click event
+    on the table rows. This action adds a control class
+    to the table row.
+    @type {Boolean}
+    ###
     selectable    : true
+    ###
+    jQuery selector element to the table setting
+    @type {jQuery Selector}
+    ###
     target        : null
+    ###
+    Time delay the contextMenu is visible after the
+    mouse-hover event on the object
+    @type {Integer}
+    ###
     delayDblclick : 0
+    ###
+    Object that stores the control classes of objects
+    of styles
+    @type {Object}
+    ###
     classes:
+      ###
+      Class added after the event triggering
+      the selection line
+      @type {String}
+      ###
       activeRow : 'active_row'
+    ###
+    Contains information generation contextMenu
+    and events, icons and other data
+    @type {Object}
+    ###
     contextMenu:
+      ###
+      Every time the button is clicked the delete is
+      triggered a call to this method. What is done
+      in the process of exclusion in the database
+      through the model
+      @param {jQuery Selector} row
+      @param {Datatable} object
+      @type {Function}
+      ###
       delete: (row, object)->
         window.lol_temp_fn_model_destroy = [row,object]
         attrs =
@@ -297,18 +344,72 @@ Lol.datatable =
                 model.set 'id', obj.button.data(Lol.datatable.private.dataset.modelId)
                 model.destroy Lol.model.destroy
         false
+      ###
+      Every time the button is clicked the
+      edit is triggered a call to this method
+      @param {jQuery Selector} row
+      @param {Datatable} object
+      @type {Function}
+      ###
       edit: (row, object)->
         object.debug row.data(object.dataset.editLink)
         window.location = row.data(object.dataset.editLink)
         false
+      ###
+      Every time the button is clicked the
+      view is triggered a call to this method
+      @param {jQuery Selector} row
+      @param {Datatable} object
+      @type {Function}
+      ###
       view: (row, object)->
         window.location = row.data(object.dataset.viewLink)
         false
-      iconView : 'icon-eye-open'
-      iconEdit : ' icon-edit'
+      ###
+      If enabled the use of icons in the contextMenu
+      is added an element "i" with the style class
+      for the configuration icon. This relates to the
+      icon button to view.
+      @type {String}
+      ###
+      iconView   : 'icon-eye-open'
+      ###
+      If enabled the use of icons in the contextMenu
+      is added an element "i" with the style class
+      for the configuration icon. This relates to the
+      icon of the button editing.
+      @type {String}
+      ###
+      iconEdit   : 'icon-edit'
+      ###
+      If enabled the use of icons in the contextMenu
+      is added an element "i" with the style class
+      for the configuration icon. This relates to the
+      icon of the button removal.
+      @type {String}
+      ###
       iconDelete : 'icon-remove'
-      useIcons : true
-      model    : null # typeof Lol.Model
+      ###
+      Sets up the "Datatable" should use the icons for
+      better identification contextMenu or not.
+      @type {Boolean}
+      ###
+      useIcons   : true
+      ###
+      Defines "String" from the class name of the model
+      of communication with the backend. It can be
+      configured by the attribute "given" by the syntax:
+      "datatable-data-model-name". See the example above.
+      @type {String}
+      ###
+      model      : null
+    ###
+    Settings element DataTables. For further details
+    and functions of each element see official
+    documentation plugin
+    @see http://datatables.net/
+    @type {Object}
+    ###
     configuration:
       aaSortingFixed : null
       aoColumnDefs   : null

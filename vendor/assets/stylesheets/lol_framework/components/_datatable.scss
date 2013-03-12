@@ -2,7 +2,7 @@
 table.lol-datatable {
   width: 100%;
   margin-top: 30px;
-  //@include user-select(none);
+  @include user-select(none);
 
   tr {
     border-bottom: 1px solid #ebebeb;
