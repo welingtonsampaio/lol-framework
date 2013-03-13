@@ -28,9 +28,11 @@ Create a new instance of I18n.
 ###
 class Lol.I18n
 # the methods
+  default_language: "en-us"
   constructor: ->
     throw 'Required jQuery library' if jQuery == undefined
-    Lol.I18n.language = if not navigator.language then 'en-us' else new String(navigator.language).toLowerCase()
+    Lol.I18n.language = if not navigator.language then @default_language else new String(navigator.language).toLowerCase()
+    Lol.I18n.language = @default_language if Lol.i18n[Lol.I18n.language] == undefined
     @tDate()
   tDate: ->
     Date.monthNames =
@@ -68,7 +70,7 @@ class Lol.I18n
 
 ###
 Method translation framework
-@see    Lol.I18n.tralate
+@see    Lol.I18n.translate
 @param  {String}
 @example
   *-* translating *-*
