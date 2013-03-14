@@ -7,6 +7,31 @@
 //  Utility Mixins
 // -------------------------------------------------------
 
+@mixin generate_margin($init:5, $space:5, $count:5) {
+  $i:0;
+  @while $i < $count {
+    $margin: ($i * $space + $init);
+    .m-t-#{$margin} { margin-top: #{$margin}px; }
+    .m-r-#{$margin} { margin-right: #{$margin}px; }
+    .m-b-#{$margin} { margin-bottom: #{$margin}px; }
+    .m-l-#{$margin} { margin-left: #{$margin}px; }
+    .m-#{$margin} { margin: #{$margin}px; }
+    $i: $i + 1;
+  }
+}
+
+@mixin generate_padding($init:5, $space:5, $count:5) {
+  $i:0;
+  @while $i < $count {
+    $padding: ($i * $space + $init);
+    .p-t-#{$padding} { padding-top: #{$padding}px; }
+    .p-r-#{$padding} { padding-right: #{$padding}px; }
+    .p-b-#{$padding} { padding-bottom: #{$padding}px; }
+    .p-l-#{$padding} { padding-left: #{$padding}px; }
+    .p-#{$padding} { padding: #{$padding}px; }
+    $i: $i + 1;
+  }
+}
 
 // -------------------------------------------------------
 //  Clearfix

@@ -28,41 +28,40 @@ Create a new instance of Modal.
 @example
   *-* JS Model *-*
   var modal = new Lol.Modal({
-    buttons  : 'OK_CANCEL', # OK | OK_CANCEL | CANCEL | YES_NO
-    content  : 'Body of Lol_Modal',
-    close    : true,
-    debug    : false,
-    title    : 'My first Modal',
-    buttonParams: {}, // @see Lol.Button
+    buttons: false,
+    content: null,
+    close: true,
+    debug: false,
+    title: null,
+    buttonParams: {},
     callbacks: {
-      initialize: function(object){},
-      buttonClick: function(button, object){},
-      afterDestroy: function(object){},
-      beforeDestroy: function(object){}
+      initialize: function(object) {},
+      buttonClick: function(button, object) {
+        return object.destroy();
+      },
+      afterDestroy: function(object) {},
+      beforeDestroy: function(object) {}
     },
     containers: {
-      buttons  : 'lol_modal_buttons',
-      close    : 'lol_modal_close',
-      content  : 'lol_modal_content',
-      main     : 'lol_modal_main',
-      overlay  : 'lol_modal_overlay',
-      title    : 'lol_modal_title'
+      buttons: 'lol_modal_buttons',
+      close: 'lol_modal_close',
+      content: 'lol_modal_content',
+      main: 'lol_modal_main',
+      title: 'lol_modal_title'
     },
     stylesheets: {
-      buttons  : {},
-      close    : {},
-      content  : {},
-      main     : {},
-      overlay  : {},
-      title    : {}
+      buttons: {},
+      close: {},
+      content: {},
+      main: {},
+      title: {}
     },
     classes: {
-      buttons  : 'lol-modal-buttons clearfix t-right',
-      close    : 'lol-modal-close pull-right',
-      content  : 'lol-modal-content clearfix',
-      main     : 'lol-modal-main container afrelative',
-      overlay  : 'lol-modal-overlay affix',
-      title    : 'lol-modal-title clearfix'
+      buttons: 'modal-footer',
+      close: 'close',
+      content: 'modal-body',
+      main: 'modal hide fade',
+      title: 'modal-header'
     }
   });
 ###
@@ -110,11 +109,16 @@ class Lol.Modal extends Lol.Core
   generate: ->
     @setEvents()
     @debug 'Generate modal and add to body'
+    set = { keyboard: false }
     @containerMain.append      @containerTitle
     @containerMain.append      @containerContent
     @containerMain.append      @containerButtons if @settings.buttons
-    @containerTitle.prepend    @containerClose   if @settings.close
-    @containerMain.modal()
+    if @settings.close
+      @containerTitle.prepend    @containerClose
+      set.keyboard = false
+    @containerMain.modal(set)
+    unless @settings.close
+      jQuery('.modal-backdrop').off('click')
   setContainersClasses: ->
     @debug 'Setting the style class in all containers'
     @containerButtons.addClass  @settings.classes.buttons if @settings.buttons
@@ -193,6 +197,7 @@ Lol.modal =
     callbacks:
       initialize: (object)->
       buttonClick: (button, object)->
+          object.destroy()
       afterDestroy: (object)->
       beforeDestroy: (object)->
     # containers

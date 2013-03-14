@@ -1,3 +1,6 @@
 .btn {
   @include user-select(none);
 }
+
+@include generate-margin();
+@include generate-padding();
