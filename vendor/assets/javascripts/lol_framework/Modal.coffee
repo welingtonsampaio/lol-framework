@@ -185,40 +185,180 @@ class Lol.Modal extends Lol.Core
 
 Lol.modal =
   defaults:
-    # Informations and configurations
-    buttons  : false # OK | OK_CANCEL | CANCEL | YES_NO
+    ###
+    This parameter facilitates the creation of
+    control buttons
+    Accepts: OK | OK_CANCEL | CANCEL | YES_NO
+    @type {String}
+    ###
+    buttons  : false
+    ###
+    String containing the HTML that will be inserted
+    in the body of "Modal"
+    @type {String}
+    ###
     content  : null
+    ###
+    Sets whether to add the button to close the
+    top of the Modal
+    @type {Boolean}
+    ###
     close    : true
+    ###
+    Sets whether the framework should print debug
+    messages to the user
+    @type {Boolean}
+    ###
     debug    : false
+    ###
+    String containing HTML that is inserted into
+    the top of Modal
+    @type {String}
+    ###
     title    : null
-    # button events
-    buttonParams: {} # @see Lol.Button
-    # Callbacks
+    ###
+    Object containing the parameters of the buttons,
+    if any is required. See the official documentation
+    @see Lol.Button
+    @type {Object}
+    ###
+    buttonParams: {}
+    ###
+    This object contains functions for callbacks
+    run in actions defined Modal system
+    @type {Object}
+    ###
     callbacks:
+      ###
+      Receives a function that is performed after the
+      creation of the Modal
+      @param {Modal}
+      @type {Function}
+      ###
       initialize: (object)->
+      ###
+      Feature executed after the click of the
+      button the footer
+      @param {Button}
+      @param {Modal}
+      @type {Function}
+      ###
       buttonClick: (button, object)->
           object.destroy()
       afterDestroy: (object)->
+      ###
+      Function performed every time after the
+      exclusion of Modal
+      @param {Modal}
+      @type {Function}
+      ###
       beforeDestroy: (object)->
-    # containers
+    ###
+    Object containing the "id" identifier
+    for each element of the modal
+    @type {Object}
+    ###
     containers:
+      ###
+      Receives a string containing the "id" container
+      identification buttons
+      @type {String}
+      ###
       buttons  : 'lol_modal_buttons'
+      ###
+      Receives a string containing the "id" container
+      identification close
+      @type {String}
+      ###
       close    : 'lol_modal_close'
+      ###
+      Receives a string containing the "id" container
+      identification content
+      @type {String}
+      ###
       content  : 'lol_modal_content'
+      ###
+      Receives a string containing the "id" container
+      identification modal
+      @type {String}
+      ###
       main     : 'lol_modal_main'
+      ###
+      Receives a string containing the "id" container
+      identification title
+      @type {String}
+      ###
       title    : 'lol_modal_title'
-    # stylesheets
+    ###
+    Object counting the stylesheets that
+    should be added to each object Modal
+    @type {Object}
+    ###
     stylesheets:
+      ###
+      Object containing the elements CSS to be inserted
+      into the container of "buttons"
+      @type {Object}
+      ###
       buttons  : {}
+      ###
+      Object containing the elements CSS to be inserted
+      into the container of "close"
+      @type {Object}
+      ###
       close    : {}
+      ###
+      Object containing the elements CSS to be inserted
+      into the container of "content"
+      @type {Object}
+      ###
       content  : {}
+      ###
+      Object containing the elements CSS to be inserted
+      into the container of "modal"
+      @type {Object}
+      ###
       main     : {}
+      ###
+      Object containing the elements CSS to be inserted
+      into the container of "title"
+      @type {Object}
+      ###
       title    : {}
-    # classes
+    ###
+    Object containing the classes that will
+    be inserted into every element of Modal
+    @type {Object}
+    ###
     classes:
+      ###
+      Style class that will be inserted to the
+      element of "buttons"
+      @type {String}
+      ###
       buttons  : 'modal-footer'
+      ###
+      Style class that will be inserted to the
+      element of "buttons"
+      @type {String}
+      ###
       close    : 'close'
+      ###
+      Style class that will be inserted to the
+      element of "buttons"
+      @type {String}
+      ###
       content  : 'modal-body'
+      ###
+      Style class that will be inserted to the
+      element of "buttons"
+      @type {String}
+      ###
       main     : 'modal hide fade'
+      ###
+      Style class that will be inserted to the
+      element of "buttons"
+      @type {String}
+      ###
       title    : 'modal-header'
 
