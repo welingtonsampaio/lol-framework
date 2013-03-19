@@ -32,52 +32,200 @@ class Lol.FormValidate extends Lol.Core
     @settings = jQuery.extend true, {}, Lol.form_validate.defaults, args
     @id = Lol.Utils.uniqid()
     Lol.Utils.addObject @
+    @patterns				= Lol.form_validate.private.patterns
+    @errorMessages	= Lol.form_validate.private.errorMessages
+    @functions			= Lol.form_validate.private.functions
     @setForm()
     @setFormElements()
+    @form.data 'formValidate', @id
+    @unsetAllEvents()
     @setEventForm()
     @setEventElements()
+    @setClassConfiguration()
+  ###
+  ###
   elementValidate: (element)->
-    console.log ["Element validate", element]
+    @debug "Verify validators this element: ", element
+    @validate element, @getOptsOfElement(element)
+  ###
+  ###
   formValidate: ->
-    console.log "Form validate"
+    _this = @
+    _return = true
+    @elements.each ->
+      return if not _return
+      element = $ @
+      opts = _this.getOptsOfElement element
+      if not _this.validate element, opts
+        _return = false
+        element.focus() if _this.settings.focusFirstInvalidElementOnSubmit
+    _return
+  ###
+  ###
+  getOptsOfElement: (element)->
+    opts = new Object
+    opts.validate = []
+    for pattern of @patterns
+      if element.data pattern
+        opts.validate.push pattern
+    opts.validate.push 'required'  if element.attr 'required'
+    opts.validate.push 'max'       if element.attr 'max'
+    opts.validate.push 'min'       if element.attr 'min'
+    opts.validate.push 'maxlength' if element.attr 'maxlength'
+    opts.validate.push 'minlength' if element.attr 'minlength'
+    opts.validate.push 'function'  if element.data "function"
+    opts.max        = element.attr "max"        if element.attr "max"
+    opts.min        = element.attr "min"        if element.attr "min"
+    opts.maxlength	= element.attr "maxlength"  if element.attr "maxlength"
+    opts.minlength	= element.attr "minlength"  if element.attr "minlength"
+    opts.function		= element.data "function"   if element.data "function"
+    opts
+  ###
+  ###
+  setClassConfiguration: ->
+    settings = @settings
+    @elements.on "focusin#{@namespace}", ->
+      $(@).addClass	settings.classActive
+    @elements.on "focusout#{@namespace}", ->
+      $(@).removeClass	settings.classActive
+  ###
+  ###
   setEventElements: ->
-    @debug 'Configurando os eventos dos elementos do formulario'
+    @debug 'Setting the events of the elements of the form'
     _this = @
     if @settings.eventValidators.focusout
       @elements.on "focusout#{@namespace}", ->
         _this.debug 'Event dispatch "focusout"', @
-        _this.elementValidate(@)
+        _this.elementValidate($ @)
     if @settings.eventValidators.focusin
       @elements.on "focusin#{@namespace}", ->
         _this.debug 'Event dispatch "focusin"', @
-        _this.elementValidate(@)
+        _this.elementValidate($ @)
     if @settings.eventValidators.change
       @elements.on "change#{@namespace}", ->
         _this.debug 'Event dispatch "change"', @
-        _this.elementValidate(@)
+        _this.elementValidate($ @)
     if @settings.eventValidators.keyup
       @elements.on "keyup#{@namespace}", ->
         _this.debug 'Event dispatch "keyup"', @
-        _this.elementValidate(@)
+        _this.elementValidate($ @)
+  ###
+  ###
   setEventForm: ->
-    @debug 'Configurando os eventos do formulario'
+    @debug 'Setting the events of the form'
     _this = @
     if @settings.validateOnSubmit
       @form.on "submit#{@namespace}", ->
-        _return = _this.formValidate()
-        return _return if _this.settings.runSubmitIsValid
-        return false
-
+        if not _this.formValidate()
+          _this.debug "Form invalid"
+          _this.settings.callbacks.invalidFormCallback _this
+          return false
+        _this.settings.callbacks.validFormCallback _this
+        _this.settings.runSubmitIsValid
+  ###
+  ###
   setForm: ->
-    @debug 'Configurando o objeto de formulario'
+    @debug 'Setting the object form, with selector:', @settings.target
     @form = $ @settings.target
+  ###
+  ###
   setFormElements: ->
-    @debug 'Configurando os elemntos dos formularios'
+    @debug 'Configuring the elements of forms, with selector:', @settings.fieldSelectors
     @elements = $ @settings.fieldSelectors, @form
+  ###
+  ###
+  unsetAllEvents: ->
+    @form.off     @namespace
+    @elements.off @namespace
+  ###
+  ###
+  validate: (element, opts)->
+    @debug "Options of element:", element, opts
+    element.data "errorMessage", false
+    if opts.validate.length
+      for item, k of opts.validate
+        @debug "Test key validate: #{k}"
+        r = @validateFunction element, opts					if k == 'function'
+        r = @validateRequired element								if k == 'required'
+        r = @validateMinMax   element, true,  opts	if k == 'max'
+        r = @validateMinMax   element, false, opts	if k == 'min'
+        r = @validateLength   element, true,  opts	if k == 'maxlength'
+        r = @validateLength   element, false, opts	if k == 'minlength'
+        r = @validatePattern  element, @patterns[k]	if @patterns.hasOwnProperty(k)
+        if not r
+          @settings.fn.markInvalid
+            element : element
+            error: k
+            _this: @
+            settings: @settings
+          return false
+    @settings.fn.markValid
+      element : element
+      settings: @settings
+    true
+  ###
+  Advised to use along with the function isEmpty
+  ###
+  validateRequired: (element)->
+    @debug "Validate called on '#{element.val()}', for required.", "Required test: #{(element.val()!='')}, required"
+    not Lol.Utils.isEmpty element.val()
+  ###
+  ###
+  validateFunction: (element, opts)->
+    value = element.val()
+    func = opts.function
+    @debug "Validate called on '#{value}' with function '#{func}'", "Return test: #{@functions[func] element, opts }, by Function: '#{func}'"
+    @functions[func] element, opts
+  ###
+  ###
+  validateLength: (element, type, opts)->
+    value = element.val()
+    if type
+      @debug "Validate called on '#{value}', with maxlength '#{opts.maxlength}'", "Return test: #{(value.length <= opts.maxlength)}, with maxlength: '#{opts.maxlength}'"
+      ((value.length <= opts.maxlength) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
+    else
+      @debug  "Validate called on '#{value}', with minlength '#{opts.minlength}'",  "Return test: #{(value.length >= opts.minlength)}, with minlength: '#{opts.minlength}'"
+      ((value.length >= opts.minlength) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
+  ###
+  ###
+  validateMinMax: (element, max, opts)->
+    value = element.val()
+    if max
+      @debug "Validate called on '#{value}', with max '#{opts.max}'", "Return test: #{(Number(value) <= opts.max)}"
+      ((Number(value) <= opts.max) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
+    else
+      @debug "Validate called on '#{value}', with min '#{opts.min}'", "Return test: #{(Number(value) >= opts.min)}"
+      ((Number(value) >= opts.min) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
+  ###
+  ###
+  validatePattern: (element, pattern)->
+    re = new RegExp pattern
+    value = element.val()
+    @debug "Validate called on '#{value}' with regex '#{re}'.", "Regex test: #{re.test(value)}, Pattern: #{pattern}"
+    (re.test(value) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
 
+###
+###
 Lol.FormValidate.addPatterns          = (pattern)->
+  for key of pattern
+    Lol.form_validate.private.patterns[key] = pattern[key] if pattern.hasOwnProperty(key)
+  Lol.form_validate.private.patterns
+###
+###
 Lol.FormValidate.addErrorMessage      = (errorMessage)->
+  for key of errorMessage
+    Lol.form_validate.private.errorMessages[key] = errorMessage[key] if errorMessage.hasOwnProperty(key)
+  Lol.form_validate.private.errorMessages
+###
+###
 Lol.FormValidate.addFunctionValidator = (functions)->
+  for key of functions
+    Lol.form_validate.private.functions[key] = functions[key] if functions.hasOwnProperty(key)
+  Lol.form_validate.private.functions
+###
+###
+Lol.FormValidate.is_to_test           = (element)->
+  $(element).data('formValidate') != true
 
 Lol.form_validate =
   private:
@@ -101,89 +249,102 @@ Lol.form_validate =
       alphaNumeric: /\w+/
       integer: /\d+/
     ###
-    Objeto contendo as validacoes por funcao
+    Contains references to the translation of messages
+    @type {Object}
+    ###
+    errorMessages:
+      required    : "form_validate_required"
+      phone       : "form_validate_phone"
+      email       : "form_validate_email"
+      url         : "form_validate_url"
+      alphaNumeric: "form_validate_alphaNumeric"
+      alpha       : "form_validate_alpha"
+      integer     : "form_validate_integer"
+      max         : "form_validate_max"
+      min         : "form_validate_min"
+      maxlength   : "form_validate_maxlength"
+      minlength   : "form_validate_minlength"
+    ###
+    Object containing the validations by function
+    @type {Object}
     ###
     functions : {}
 
   defaults:
     ###
-    Selector ou DOMObject do elemento do formulario
-    que receberá o as validacoes
-    @type {String | DOMObject}
+    DOMObject element that will receive the form validations
+    @type {DOMObject}
     ###
     target: null
     ###
-    Classe adicionada quando o elemento estiver ativo
+    Class added when the element is active
     @type {String}
     ###
     classActive: 'active-field'
     ###
-    Classe adicionada apos a validacao do elemento e
-    o mesmo for invalido
+    Class added after the validation of the element and
+    the same is invalid
     @type {String}
     ###
     classError : 'error-field'
     ###
-    Classe adicionada apos a validacao do elemento e
-    o mesmo for valido
+    Class added after the validation of the element and
+    the same is valid
     @type {String}
     ###
     classValid : 'valid-field'
     ###
-    Contem o seletor dos elementos a serem validados
+    Contains the selector element to be validated
     @type {String}
     ###
     fieldSelectors: ':input:visible:not(:button):not(:disabled):not(.novalidate):not(:submit)'
     ###
-    Define em quais eventos os elementos do formulario
+    Defines which events the elements of the form
     deve ser validado
     @type {Object}
     ###
     eventValidators:
       ###
-      Define se o validador deve ser testado no evento
-      de focusout
+      Defines if the validator should be tested in the event focusout
       @type {Boolean}
       ###
       focusout: true
       ###
-      Define se o validador deve ser testado no evento
-      de focusin
+      Defines if the validator should be tested in the event focusin
       @type {Boolean}
       ###
       focusin: false
       ###
-      Define se o validador deve ser testado no evento
-      de change
+      Defines if the validator should be tested in the event change
       @type {Boolean}
       ###
       change: true
       ###
-      Define se o validador deve ser testado no evento
-      de keyup
+      Defines if the validator should be tested in the event keyup
       @type {Boolean}
       ###
       keyup: false
     ###
-    Informa se o sistema deve enviar o formulario apos
-    todas as validacoes forem validas
+    Reports whether the system should send the form after
+    all validations are valid
     @type {Boolean}
     ###
     runSubmitIsValid: true
     ###
-    Define se deve ser colocado o foco no primeiro
-    elemento do formulario que for invalido quando
-    for disparado o evento de submit
+    Sets whether the focus should be placed on the first
+    element of the form that is invalid when the event is
+    triggered submit
     @type {Boolean}
     ###
     focusFirstInvalidElementOnSubmit: true
     ###
-    When submitting, validate elements that haven't been validated yet?
+    When submitting, validate elements that haven't been
+    validated yet?
     @type {Boolean}
     ###
     validateOnSubmit : true
     ###
-    Define se deve ser usado o modo de debug
+    Sets whether to use the debug mode
     @type {Boolean}
     ###
     debug : false
@@ -193,22 +354,39 @@ Lol.form_validate =
     ###
     callbacks:
       ###
-      Funcao chamada toda vez que um campo
-      é marcado como invalido
+      Function called every time a field is marked as invalid
       @param {DOMObject} element
       @param {FormValidate} object
       @type {Function}
       ###
       invalidCallback : (element, object)->
       ###
-      Funcao chamada toda vez que um campo
-      é marcado como valido
+      Function called every time a field is marked as valid
       @param {DOMObject} element
       @param {FormValidate} object
       @type {Function}
       ###
       validCallback: (element, object)->
-
+      ###
+      Function triggered whenever the form is submitted and all
+      the fields are invalid
+      @param {FormValidate} object
+      @type {Function}
+      ###
+      invalidFormCallback: (object)->
+        object.debug "invalid"
+      ###
+      Function triggered whenever the form is submitted and all
+      the fields are valid
+      @param {FormValidate} object
+      @type {Function}
+      ###
+      validFormCallback: (object)->
+        object.debug "valid"
+    ###
+    Object containing callback functions
+    @type {Object}
+    ###
     fn:
       ###
       Mark field invalid
@@ -218,18 +396,14 @@ Lol.form_validate =
       markInvalid: (params)->
         element = $ params.element
         _this		= params._this
-        params.settings.unmark params
+        params.settings.fn.unmark params
         if element.data "errorMessage"
           element.data 'title', element.data "errorMessage"
         else
-          element.data 'title', params.settings.errorMessages[params.error]
+          element.data 'title', Lol.t _this.errorMessages[params.error]
         element.tooltip()
         element.addClass params.settings.classError
-        params.settings.invalidCallback params
-        element.bind "focusin#{_this.namespace}", ->
-          $(@).tooltip 'show'
-        element.bind "focusout#{_this.namespace}", ->
-          $(@).tooltip 'hide'
+        params.settings.callbacks.invalidCallback params
       ###
       Mark field valid
       @param {Object} params
@@ -237,12 +411,11 @@ Lol.form_validate =
       ###
       markValid: (params)->
         element = $ params.element
-        params.settings.unmark params
+        params.settings.fn.unmark params
         element.addClass params.settings.classValid
-        params.settings.validCallback params
+        params.settings.callbacks.validCallback params
       ###
-      Desmarca e retira todos os
-      eventos do elemento
+      Clears and removes all events of the element
       @param {Object} element
       @type {Function}
       ###
@@ -255,200 +428,10 @@ Lol.form_validate =
         element.removeClass params.settings.classError
         element.removeClass params.settings.classValid
 
-# auto instaciavel
+# self instantiable
 jQuery ->
-  new Lol.FormValidate
-    target: "form[data-toggle='form_validate']:not(.novalidate)"
-    runSubmitIsValid: false
-    debug: true
-
-###
-(($)->
-  zaez =
-    validate:
-      defaults:
-
-        defaultPrefixData : 'zvalidate'
-
-
-
-  class ZValidate
-  # declaration of variables
-    debugMessage : 1
-    debugPrefix: 'ZValidate'
-    namespace	: '.zvalidate'
-    # the methods
-    constructor: (@form, @settings)->
-      @patterns				= @settings.patterns
-      @errorMessages	= @settings.errorMessages
-      @functions			= @settings.functions
-      @form.data 'zvalidate', @
-      @setElements()
-      @unsetAllEventsElements()
-      @setClassConfiguration()
-      @setAllEvents()
-    debug: ->
-      if @settings.debug and window.console
-        message = ["#{@debugPrefix} - #{@debugMessage}"]
-        message.push value for value in arguments
-        console.log message
-        @debugMessage += 1
-    getDataParams: ->
-      {
-      object		: @
-      settings	: @settings
-      patterns	: @patterns
-      errorMessages : @errorMessages
-      functions	: @functions
-      }
-    getOptsOfElement: (element)->
-      opts = new Object
-      opts.validate = []
-      for pattern of @patterns
-        if element.data("#{@settings.defaultPrefixData}-#{pattern}")
-          opts.validate.push pattern
-      opts.validate.push 'required'  if element.attr 'required'
-      opts.validate.push 'max'       if element.attr 'max'
-      opts.validate.push 'min'       if element.attr 'min'
-      opts.validate.push 'maxlength' if element.attr 'maxlength'
-      opts.validate.push 'minlength' if element.attr 'minlength'
-      opts.validate.push 'function'  if element.data "#{@settings.defaultPrefixData}-function"
-      opts.max        = element.attr "max"        if element.attr "max"
-      opts.min        = element.attr "min"        if element.attr "min"
-      opts.maxlength	= element.attr "maxlength"  if element.attr "maxlength"
-      opts.minlength	= element.attr "minlength"  if element.attr "minlength"
-      opts.function		= element.data "#{@settings.defaultPrefixData}-function" if element.data "#{@settings.defaultPrefixData}-function"
-      opts
-    setAllEvents: ->
-      @setAllEventsElements()
-      @setFormEvent()
-    setAllEventsElements: ->
-      _this = @
-      @elements.each (event)->
-        _this.setElementEvent $(@)
-    setClassConfiguration: ->
-      settings = @settings
-      @elements.bind "focusin#{@namespace}", ->
-        $(@).addClass	settings.classActive
-      @elements.bind "focusout#{@namespace}", ->
-        $(@).removeClass	settings.classActive
-    setElements: ->
-      @elements = @form.find @settings.fieldSelectors
-    setElementEvent: (element)->
-      _this = @
-      opts = @getOptsOfElement element
-      element.bind("change#{_this.namespace}", ->
-        _this.validate element, opts ) if @settings.change
-      element.bind("focusout#{_this.namespace}", ->
-        _this.validate element, opts ) if @settings.focusout
-      element.bind("focusin#{_this.namespace}", ->
-        _this.validate element, opts ) if @settings.focusin
-      element.bind("keyup#{_this.namespace}", ->
-        _this.validate element, opts ) if @settings.keyup
-    setFormEvent: ->
-      _this = @
-      if @settings.validateOnSubmit
-        settings = @settings
-        @form.submit ->
-          _this.debug 'Submit event triggered'
-          if not $.zaezValidate.validateForm $(@)
-            _this.debug 'This form is not valid'
-            return false
-          settings.runSubmitIsValid
-    unsetAllEventsElements: ->
-      _this = @
-      @elements.each ->
-        $(@).unbind _this.namespace
-    validate: (element, opts)->
-      @debug "Options of element:", element, opts
-      element.data "errorMessage", false
-      if opts.validate.length
-        for item, k of opts.validate
-          @debug "Test key validate: #{k}"
-          r = @validateFunction element, opts					if k == 'function'
-          r = @validateRequired element								if k == 'required'
-          r = @validateMinMax   element, true,  opts	if k == 'max'
-          r = @validateMinMax   element, false, opts	if k == 'min'
-          r = @validateLength   element, true,  opts	if k == 'maxlength'
-          r = @validateLength   element, false, opts	if k == 'minlength'
-          r = @validatePattern  element, @patterns[k]	if @patterns.hasOwnProperty(k)
-          if not r
-            @settings.markInvalid
-              element : element
-              error: k
-              _this: @
-              settings: @settings
-            return false
-      @settings.markValid
-        element : element
-        settings: @settings
-      true
-    # Advised to use along with the function isEmpty
-    validateRequired: (element)->
-      @debug "Validate called on '#{element.val()}', for required.", "Required test: #{(element.val()!='')}, required"
-      if typeof isEmpty == "function"
-        not isEmpty element.val()
-      else
-        (element.val()!='')
-    validateFunction: (element, opts)->
-      value = element.val()
-      func = opts.function
-      @debug "Validate called on '#{value}' with function '#{func}'", "Return test: #{@functions[func] element, opts }, by Function: '#{func}'"
-      @functions[func] element, opts
-    validateLength: (element, type, opts)->
-      value = element.val()
-      if type
-        @debug "Validate called on '#{value}', with maxlength '#{opts.maxlength}'", "Return test: #{(value.length <= opts.maxlength)}, with maxlength: '#{opts.maxlength}'"
-        (value.length <= opts.maxlength)
-      else
-        @debug  "Validate called on '#{value}', with minlength '#{opts.minlength}'",  "Return test: #{(value.length >= opts.minlength)}, with minlength: '#{opts.minlength}'"
-        (value.length >= opts.minlength)
-    validateMinMax: (element, max, opts)->
-      value = element.val()
-      if max
-        @debug "Validate called on '#{value}', with max '#{opts.max}'", "Return test: #{(Number(value) <= opts.max)}"
-        (Number(value) <= opts.max)
-      else
-        @debug "Validate called on '#{value}', with min '#{opts.min}'", "Return test: #{(Number(value) >= opts.min)}"
-        (Number(value) >= opts.min)
-    validatePattern: (element, pattern)->
-      re = new RegExp pattern
-      value = element.val()
-      @debug "Validate called on '#{value}' with regex '#{re}'.", "Regex test: #{re.test(value)}, Pattern: #{pattern}"
-      re.test value
-
-  $.zaezValidate =
-    addPattern: (pattern)->
-      for key of pattern
-        zaez.validate.defaults.patterns[key] = pattern[key] if pattern.hasOwnProperty(key)
-      zaez.validate.defaults.patterns
-    addErrorMessage: (errorMessage)->
-      for key of errorMessage
-        zaez.validate.defaults.errorMessages[key] = errorMessage[key] if errorMessage.hasOwnProperty(key)
-      zaez.validate.defaults.errorMessages
-    addFunction: (func)->
-      for key of func
-        zaez.validate.defaults.functions[key] = func[key] if func.hasOwnProperty(key)
-      zaez.validate.defaults.functions
-    validateForm: (form)->
-      _this = form.data 'zvalidate'
-      _return = true
-      _this.elements.each ->
-        return if not _return
-        element = $ @
-        opts = _this.getOptsOfElement element
-        if not _this.validate element, opts
-          _return = false
-          element.focus() if _this.settings.focusFirstInvalidElementOnSubmit
-      _return
-    is_to_test: (@element)->
-      @element.data('zvalidate') != true
-
-
-  # Só deve ser executado em um objeto DOM do tipo form
-  $.fn.zvalidate = (settings)->
-    settings = $.extend true, {}, zaez.validate.defaults, settings
-    form = $ @
-    new ZValidate form, settings
-    true
-)(jQuery)                     ###
+  $("form[data-toggle='form_validate']:not(.novalidate)").each ->
+    new Lol.FormValidate
+      target: $ @
+      runSubmitIsValid: false
+      debug: true

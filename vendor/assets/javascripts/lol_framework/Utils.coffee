@@ -58,4 +58,14 @@ Lol.Utils =
   ###
   redirector: (url)->
     window.location = url
+  ###
+  Verify empty state of an string. Including spaces
+  @return {Boolean}
+  ###
+  isEmpty: (pStrText)->
+    newString = "";
+    for char in pStrText
+      if char != " "
+        newString = newString + char
+    newString.length <= 0
 
