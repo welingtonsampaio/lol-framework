@@ -22,7 +22,8 @@ module LolFramework
           modal:                         false,
           model:                         false,
           model_destroy:                 false,
-          datatable:                     false})
+          datatable:                     false,
+          form_validate:                 false})
 
         def generate
           # removes the current JavaScript file
@@ -72,6 +73,7 @@ module LolFramework
           lol.write "//= require ./lol_framework/Model\n"                         if model
           lol.write "//= require ./lol_framework/Model/Destroy\n"                 if model_destroy
           lol.write "//= require ./lol_framework/Datatable\n"                     if datatable
+          lol.write "//= require ./lol_framework/FormValidate\n"                  if form_validate
           lol.close
         end
       end

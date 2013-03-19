@@ -55,3 +55,15 @@ Lol.i18n['en-us'] =
   # Models
   model_destroy_error   : 'Could not delete this record. Error: "_STATUS_TEXT_".'
   model_destroy_success : 'Record successfully deleted.'
+  # Form Validate
+  form_validate_required			: "en-US - Este campo não pode ficar em branco"
+  form_validate_phone					: "en-US - Informe um telefone válido"
+  form_validate_email					: "en-US - Informe um email válido"
+  form_validate_url						: "en-US - Informe uma url válida"
+  form_validate_alphaNumeric	: "en-US - Este campo deve conter apenas text e números"
+  form_validate_alpha					: "en-US - Este campo deve conter apenas texto"
+  form_validate_integer				: "en-US - Este campo deve conter números"
+  form_validate_max			      : "en-US - Este campo ultrapassou o valor maximo permitido"
+  form_validate_min     			: "en-US - Este campo não tem o valor mínimo requirido"
+  form_validate_maxlength			: "en-US - Este campo ultrapassou o tamanho maximo"
+  form_validate_minlength			: "en-US - Este campo não tem o tamanho mínimo"

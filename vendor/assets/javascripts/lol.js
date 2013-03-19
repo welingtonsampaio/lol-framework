@@ -20,3 +20,4 @@
 //= require ./lol_framework/Model
 //= require ./lol_framework/Model/Destroy
 //= require ./lol_framework/Datatable
+//= require ./lol_framework/FormValidate

@@ -55,6 +55,18 @@ Lol.i18n['pt-br'] =
   # Models
   model_destroy_error   : 'Não foi possivel excluir este registro. Erro: "_STATUS_TEXT_".'
   model_destroy_success : 'Registro excluído com sucesso.'
+  # Form Validate
+  form_validate_required			: "Este campo não pode ficar em branco"
+  form_validate_phone					: "Informe um telefone válido"
+  form_validate_email					: "Informe um email válido"
+  form_validate_url						: "Informe uma url válida"
+  form_validate_alphaNumeric	: "Este campo deve conter apenas text e números"
+  form_validate_alpha					: "Este campo deve conter apenas texto"
+  form_validate_integer				: "Este campo deve conter números"
+  form_validate_max			      : "Este campo ultrapassou o valor maximo permitido"
+  form_validate_min     			: "Este campo não tem o valor mínimo requirido"
+  form_validate_maxlength			: "Este campo ultrapassou o tamanho maximo"
+  form_validate_minlength			: "Este campo não tem o tamanho mínimo"
 
 ## Alias
 Lol.i18n['pt'] = Lol.i18n['pt-br']

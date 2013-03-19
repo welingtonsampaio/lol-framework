@@ -19,6 +19,7 @@ LolFramework::Config.COMPONENTS_JS.iterate! do |js|
   js.model=                         true
   js.model_destroy=                 true
   js.datatable=                     true
+  js.form_validate=                 true
 end
 
 LolFramework::Config.COMPONENTS_CSS.iterate! do |css|
