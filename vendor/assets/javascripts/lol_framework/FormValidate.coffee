@@ -43,24 +43,30 @@ class Lol.FormValidate extends Lol.Core
     @setEventElements()
     @setClassConfiguration()
   ###
+  Recupera todos os validadores do elemento enviado e faz a verificacao
+  @param {DOMObject} element
+  @return {Boolean}
   ###
   elementValidate: (element)->
     @debug "Verify validators this element: ", element
     @validate element, @getOptsOfElement(element)
   ###
+  Valida todos os elementos do formulario
+  @return {Boolean}
   ###
   formValidate: ->
+    @debug "Iniciando a verificacao de todos os elementos do formulario: ", @form
     _this = @
     _return = true
     @elements.each ->
       return if not _return
       element = $ @
-      opts = _this.getOptsOfElement element
-      if not _this.validate element, opts
+      if not _this.elementValidate element
         _return = false
         element.focus() if _this.settings.focusFirstInvalidElementOnSubmit
     _return
   ###
+
   ###
   getOptsOfElement: (element)->
     opts = new Object
@@ -187,6 +193,7 @@ class Lol.FormValidate extends Lol.Core
       @debug  "Validate called on '#{value}', with minlength '#{opts.minlength}'",  "Return test: #{(value.length >= opts.minlength)}, with minlength: '#{opts.minlength}'"
       ((value.length >= opts.minlength) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
   ###
+
   ###
   validateMinMax: (element, max, opts)->
     value = element.val()
@@ -197,6 +204,11 @@ class Lol.FormValidate extends Lol.Core
       @debug "Validate called on '#{value}', with min '#{opts.min}'", "Return test: #{(Number(value) >= opts.min)}"
       ((Number(value) >= opts.min) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
   ###
+  Valida o elemento atraves da pattern enviada
+  usando o RegExp como validador
+  @param {DOMElement} element
+  @param {RegExp} pattern
+  @return {Boolean}
   ###
   validatePattern: (element, pattern)->
     re = new RegExp pattern
@@ -205,24 +217,52 @@ class Lol.FormValidate extends Lol.Core
     (re.test(value) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
 
 ###
+Adiciona um pattern de validador a biblioteca existente, pode ser enviado quantos patterns forem necessarios para adicao
+@example
+Lol.FormValidate.addPatterns({
+  pattern_1: /^pattern_1(.)* /,
+  pattern_2: /^pattern_2(.)* /
+});
+@param {Object}
+@return {Object}
 ###
 Lol.FormValidate.addPatterns          = (pattern)->
   for key of pattern
     Lol.form_validate.private.patterns[key] = pattern[key] if pattern.hasOwnProperty(key)
   Lol.form_validate.private.patterns
 ###
+Adiciona a chave de traducao do nome do patterns, pode ser enviado quantos nomes forem necessarios para adicao
+@example
+Lol.FormValidate.addErrorMessage({
+  error_1: "name_equal_file_translate_1",
+  error_2: "name_equal_file_translate_2"
+});
+@param {Object}
+@return {Object}
 ###
 Lol.FormValidate.addErrorMessage      = (errorMessage)->
   for key of errorMessage
     Lol.form_validate.private.errorMessages[key] = errorMessage[key] if errorMessage.hasOwnProperty(key)
   Lol.form_validate.private.errorMessages
 ###
+Adiciona uma funcao aos validadores, pode ser enviado quantas funcoes forem necessarias para adicao
+@example
+Lol.FormValidate.addFunctionValidator({
+  validate_test_1: function(element, opts){},
+  validate_test_2: function(element, opts){}
+});
+@param {Object}
+@return {Object}
 ###
 Lol.FormValidate.addFunctionValidator = (functions)->
   for key of functions
     Lol.form_validate.private.functions[key] = functions[key] if functions.hasOwnProperty(key)
   Lol.form_validate.private.functions
 ###
+Testa se o elemento enviado faz parte da
+classe FormValidate
+@param {DOMElement}
+@return {Boolean}
 ###
 Lol.FormValidate.is_to_test           = (element)->
   $(element).data('formValidate') != true
