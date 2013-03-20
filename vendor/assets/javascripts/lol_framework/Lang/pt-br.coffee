@@ -64,7 +64,7 @@ Lol.i18n['pt-br'] =
   form_validate_alpha					: "Este campo deve conter apenas texto"
   form_validate_integer				: "Este campo deve conter números"
   form_validate_max			      : "Este campo ultrapassou o valor maximo permitido"
-  form_validate_min     			: "Este campo não tem o valor mínimo requirido"
+  form_validate_min     			: "Este campo não tem o valor mínimo requerido"
   form_validate_maxlength			: "Este campo ultrapassou o tamanho maximo"
   form_validate_minlength			: "Este campo não tem o tamanho mínimo"
 

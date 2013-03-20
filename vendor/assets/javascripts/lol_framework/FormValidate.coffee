@@ -19,7 +19,37 @@ For details please refer to: http://welington.zaez.net
 ###
 
 ###
-
+Class for validation of forms
+@example
+  *-* Create manual alert *-*
+  new Lol.FormValidate({
+    target: "form",
+    classActive: 'active-field',
+    classError: 'error-field',
+    classValid: 'valid-field',
+    fieldSelectors: ':input:visible:not(:button):not(:disabled):not(.novalidate):not(:submit)',
+    eventValidators: {
+      focusout: true,
+      focusin: false,
+      change: true,
+      keyup: false
+    },
+    runSubmitIsValid: true,
+    focusFirstInvalidElementOnSubmit: true,
+    validateOnSubmit: true,
+    debug: false,
+    callbacks: {
+      invalidCallback: function(element, object) {},
+      validCallback: function(element, object) {},
+      invalidFormCallback: function(object) {},
+      validFormCallback: function(object) {}
+    },
+    fn: {
+      markInvalid: function(params) {},
+      markValid: function(params) {},
+      unmark: function(params) {}
+    }
+  });
 @type {FormValidate}
 ###
 class Lol.FormValidate extends Lol.Core
@@ -43,7 +73,7 @@ class Lol.FormValidate extends Lol.Core
     @setEventElements()
     @setClassConfiguration()
   ###
-  Recupera todos os validadores do elemento enviado e faz a verificacao
+  Retrieve all validators element and checks sent
   @param {DOMObject} element
   @return {Boolean}
   ###
@@ -51,7 +81,7 @@ class Lol.FormValidate extends Lol.Core
     @debug "Verify validators this element: ", element
     @validate element, @getOptsOfElement(element)
   ###
-  Valida todos os elementos do formulario
+  Validates all elements of the form
   @return {Boolean}
   ###
   formValidate: ->
@@ -66,7 +96,11 @@ class Lol.FormValidate extends Lol.Core
         element.focus() if _this.settings.focusFirstInvalidElementOnSubmit
     _return
   ###
-
+  Parses the sent and creates an object
+  containing all validators to examine
+  this object
+  @param {DOMObject} element
+  @return {Object}
   ###
   getOptsOfElement: (element)->
     opts = new Object
@@ -204,8 +238,8 @@ class Lol.FormValidate extends Lol.Core
       @debug "Validate called on '#{value}', with min '#{opts.min}'", "Return test: #{(Number(value) >= opts.min)}"
       ((Number(value) >= opts.min) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
   ###
-  Valida o elemento atraves da pattern enviada
-  usando o RegExp como validador
+  Validates the element through the pattern
+  sent as validator using RegExp
   @param {DOMElement} element
   @param {RegExp} pattern
   @return {Boolean}
@@ -217,7 +251,9 @@ class Lol.FormValidate extends Lol.Core
     (re.test(value) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
 
 ###
-Adiciona um pattern de validador a biblioteca existente, pode ser enviado quantos patterns forem necessarios para adicao
+Adds a validator pattern of the existing
+library, you can send as many patterns are
+required for addition
 @example
 Lol.FormValidate.addPatterns({
   pattern_1: /^pattern_1(.)* /,
@@ -231,7 +267,9 @@ Lol.FormValidate.addPatterns          = (pattern)->
     Lol.form_validate.private.patterns[key] = pattern[key] if pattern.hasOwnProperty(key)
   Lol.form_validate.private.patterns
 ###
-Adiciona a chave de traducao do nome do patterns, pode ser enviado quantos nomes forem necessarios para adicao
+Adds the key traducao the name patterns,
+can be sent as many names are required for
+addition
 @example
 Lol.FormValidate.addErrorMessage({
   error_1: "name_equal_file_translate_1",
@@ -245,7 +283,8 @@ Lol.FormValidate.addErrorMessage      = (errorMessage)->
     Lol.form_validate.private.errorMessages[key] = errorMessage[key] if errorMessage.hasOwnProperty(key)
   Lol.form_validate.private.errorMessages
 ###
-Adiciona uma funcao aos validadores, pode ser enviado quantas funcoes forem necessarias para adicao
+Adds a function to validators, you can send
+as many functions are necessary for addition
 @example
 Lol.FormValidate.addFunctionValidator({
   validate_test_1: function(element, opts){},
@@ -259,8 +298,8 @@ Lol.FormValidate.addFunctionValidator = (functions)->
     Lol.form_validate.private.functions[key] = functions[key] if functions.hasOwnProperty(key)
   Lol.form_validate.private.functions
 ###
-Testa se o elemento enviado faz parte da
-classe FormValidate
+Tests if the element is part of the
+class sent FormValidate
 @param {DOMElement}
 @return {Boolean}
 ###
@@ -436,9 +475,10 @@ Lol.form_validate =
       markInvalid: (params)->
         element = $ params.element
         _this		= params._this
+        errorMessage = element.data "errorMessage"
         params.settings.fn.unmark params
-        if element.data "errorMessage"
-          element.data 'title', element.data "errorMessage"
+        if errorMessage
+          element.data 'title', errorMessage
         else
           element.data 'title', Lol.t _this.errorMessages[params.error]
         element.tooltip()
