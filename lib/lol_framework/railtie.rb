@@ -1,3 +1,5 @@
+require "rails"
+
 module LolFramework
   class Railtie < ::Rails::Railtie
     initializer "LolFramework.railtie" do |app|

@@ -21,7 +21,7 @@ For details please refer to: http://welington.zaez.net
 ###
 Class for validation of forms
 @example
-  *-* Create manual alert *-*
+  *-* Create manual FormValidate *-*
   new Lol.FormValidate({
     target: "form",
     classActive: 'active-field',
@@ -121,6 +121,9 @@ class Lol.FormValidate extends Lol.Core
     opts.function		= element.data "function"   if element.data "function"
     opts
   ###
+  Sets the style classes to the objects to be
+  tested, from the events of focusIn and focusOut
+  @return {void}
   ###
   setClassConfiguration: ->
     settings = @settings
@@ -129,6 +132,9 @@ class Lol.FormValidate extends Lol.Core
     @elements.on "focusout#{@namespace}", ->
       $(@).removeClass	settings.classActive
   ###
+  Set the validation event for the
+  elements within the form
+  @return {void}
   ###
   setEventElements: ->
     @debug 'Setting the events of the elements of the form'
@@ -150,6 +156,9 @@ class Lol.FormValidate extends Lol.Core
         _this.debug 'Event dispatch "keyup"', @
         _this.elementValidate($ @)
   ###
+  Configures events relevant to the
+  form to be tested
+  @return {void}
   ###
   setEventForm: ->
     @debug 'Setting the events of the form'
@@ -163,21 +172,34 @@ class Lol.FormValidate extends Lol.Core
         _this.settings.callbacks.validFormCallback _this
         _this.settings.runSubmitIsValid
   ###
+  Set the form to be tested
+  @return {void}
   ###
   setForm: ->
     @debug 'Setting the object form, with selector:', @settings.target
     @form = $ @settings.target
   ###
+  Sets all elements of the form to be tested
+  @return {void}
   ###
   setFormElements: ->
     @debug 'Configuring the elements of forms, with selector:', @settings.fieldSelectors
     @elements = $ @settings.fieldSelectors, @form
   ###
+  Removes all configured events for elements
+  with the namespace of the class
+  @return {void}
   ###
   unsetAllEvents: ->
     @form.off     @namespace
     @elements.off @namespace
   ###
+  Analyzer validations, he grabs the object of
+  the options page verifies existing validation
+  and test it validates one by one
+  @param {DOMObject} element
+  @param {Object} opts
+  @return {Boolean}
   ###
   validate: (element, opts)->
     @debug "Options of element:", element, opts
@@ -205,11 +227,17 @@ class Lol.FormValidate extends Lol.Core
     true
   ###
   Advised to use along with the function isEmpty
+  @param {DOMObject} element
+  @return {Boolean}
   ###
   validateRequired: (element)->
     @debug "Validate called on '#{element.val()}', for required.", "Required test: #{(element.val()!='')}, required"
     not Lol.Utils.isEmpty element.val()
   ###
+  Makes validation through a custom function outside
+  @param {DOMObject} element
+  @param {Object} opts
+  @return {Boolean}
   ###
   validateFunction: (element, opts)->
     value = element.val()
@@ -217,6 +245,11 @@ class Lol.FormValidate extends Lol.Core
     @debug "Validate called on '#{value}' with function '#{func}'", "Return test: #{@functions[func] element, opts }, by Function: '#{func}'"
     @functions[func] element, opts
   ###
+  Validates maximum and minimum amount of characters
+  @param {DOMObject} element
+  @param {Boolean} type
+  @param {Object} opts
+  @return {Boolean}
   ###
   validateLength: (element, type, opts)->
     value = element.val()
@@ -227,7 +260,11 @@ class Lol.FormValidate extends Lol.Core
       @debug  "Validate called on '#{value}', with minlength '#{opts.minlength}'",  "Return test: #{(value.length >= opts.minlength)}, with minlength: '#{opts.minlength}'"
       ((value.length >= opts.minlength) || (Lol.Utils.isEmpty(value) && element.attr('data-allow-empty')))
   ###
-
+  Validates numerical values ​​for minimum and maximum
+  @param {DOMObject} element
+  @param {Boolean} max
+  @param {Object} opts
+  @return {Boolean}
   ###
   validateMinMax: (element, max, opts)->
     value = element.val()
@@ -379,7 +416,7 @@ Lol.form_validate =
     fieldSelectors: ':input:visible:not(:button):not(:disabled):not(.novalidate):not(:submit)'
     ###
     Defines which events the elements of the form
-    deve ser validado
+    must be validated
     @type {Object}
     ###
     eventValidators:
@@ -513,5 +550,3 @@ jQuery ->
   $("form[data-toggle='form_validate']:not(.novalidate)").each ->
     new Lol.FormValidate
       target: $ @
-      runSubmitIsValid: false
-      debug: true
