@@ -8,6 +8,7 @@ module LolFramework
           library_date_functions:        false,
           library_jquery_dataTables_min: false,
           library_jquery_mobile:         false,
+          library_caret:                 false,
           lol:                           false,
           lang_en_us:                    false,
           lang_pt_br:                    false,
@@ -23,7 +24,8 @@ module LolFramework
           model:                         false,
           model_destroy:                 false,
           datatable:                     false,
-          form_validate:                 false})
+          form_validate:                 false,
+          masked:                        false})
 
         def generate
           # removes the current JavaScript file
@@ -37,6 +39,7 @@ module LolFramework
             button:        %w{core},
             datatable:     %w{core library_jquery_dataTables_min},
             core:          %w{lol utils  i18n  lang_en_us debug library_underscore library_backbone},
+            masked:        %w{core library_caret},
             modal:         %w{core button},
             model:         %w{core},
             model_destroy: %w{model alert}
@@ -53,7 +56,7 @@ module LolFramework
           lol = File.new("#{LolFramework::Config::LOL_ASSETS_PATH}/javascripts/lol.js", "w")
           lol.write "//= require ./lol_framework/Library/underscore\n"            if library_underscore
           lol.write "//= require ./lol_framework/Library/backbone\n"              if library_backbone
-          lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
+          lol.write "//= require ./lol_framework/Library/caret\n"                 if library_caret
           lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
           lol.write "//= require ./lol_framework/Library/date-functions\n"        if library_date_functions
           lol.write "//= require ./lol_framework/Library/jquery.dataTables.min\n" if library_jquery_dataTables_min
@@ -74,6 +77,7 @@ module LolFramework
           lol.write "//= require ./lol_framework/Model/Destroy\n"                 if model_destroy
           lol.write "//= require ./lol_framework/Datatable\n"                     if datatable
           lol.write "//= require ./lol_framework/FormValidate\n"                  if form_validate
+          lol.write "//= require ./lol_framework/Masked\n"                        if masked
           lol.close
         end
       end

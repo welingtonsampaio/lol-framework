@@ -4,6 +4,7 @@ LolFramework::Config.COMPONENTS_JS.iterate! do |js|
   js.library_date_functions=        true
   js.library_jquery_dataTables_min= true
   js.library_jquery_mobile=         true
+  js.library_caret=                 true
   js.lol=                           true
   js.lang_en_us=                    true
   js.lang_pt_br=                    true
@@ -20,6 +21,7 @@ LolFramework::Config.COMPONENTS_JS.iterate! do |js|
   js.model_destroy=                 true
   js.datatable=                     true
   js.form_validate=                 true
+  js.masked=                        true
 end
 
 LolFramework::Config.COMPONENTS_CSS.iterate! do |css|
