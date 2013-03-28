@@ -43,8 +43,38 @@ class Lol.Masked extends Lol.Core
       @debug "Criando a mascara para forma humana"
       return @target.val( @getHumanMask() )
     false
+  ###
+  Funcao para a selecao de conteudo do input
+  @param {Integer} begin
+  @param {Integer} end
+  @return {Mixed}
+  ###
+  caret: (begin, end)->
+    npt = if @target.jquery && @target.length > 0 then @target[0] else input
+    return unless typeof begin == 'number'
+    return unless @target.is ':visible'
+    end = if typeof end == 'number' then end else begin
+    ++end if @settings.insertMode == true and begin == end
+    if npt.setSelectionRange
+      if end == begin
+        npt.focus()
+        npt.setSelectionRange begin, end
+      else
+        npt.select()
+        npt.selectionStart = begin
+        npt.selectionEnd =  if @android534 then begin else end
+    else if npt.createTextRange
+      range = npt.createTextRange()
+      range.collapse  true
+      range.moveEnd   'character', end
+      range.moveStart 'character', begin
+      range.select()
+    npt.focus()
   changeCursorPosition: ->
-    timer = setTimeout
+    _this = @
+    setTimeout( ->
+      _this.caret(1,1)
+    , 10)
   eventKeyBlur: (event)->
     @debug "Evento de blur disparado com o conteudo e mascara:",     @target.val(), @mask
     @removePlaceholder()
@@ -91,6 +121,14 @@ class Lol.Masked extends Lol.Core
     @atualV = 0
     @atualM = 0
     @definitions = Lol.masked.definitions
+    @iphone     = navigator.userAgent.match(/iphone/i) != null
+    @android    = navigator.userAgent.match(/android.*safari.*/i) != null
+    @android534 = null
+    if @android
+      browser  = navigator.userAgent.match /safari.*/i
+      version  = parseInt new RegExp(/[0-9]+/).exec(browser)
+      @android = version <= 533
+      @android534 = 533 < version <= 534
 
 Lol.Masked.addDefinition = ->
 Lol.masked =
@@ -105,8 +143,18 @@ Lol.masked =
     "y": /[0-9]{2,2}/
     "Y": /[0-9]{4,4}/
     "h": /^#?[a-fA-F0-9]{6}/
+  defCounts:
+    "9": 1
+    "a": 1
+    "@": 1
+    "d": 2
+    "m": 2
+    "y": 2
+    "Y": 4
+    "h": 6
   defaults:
     debug       : false
+    insertMode  : true
     placeholder : "_"
     target      : null
 
